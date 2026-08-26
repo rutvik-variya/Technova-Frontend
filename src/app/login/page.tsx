@@ -7,7 +7,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { loginSchema, type LoginFormValues } from "@/validations/auth.schema";
 
 import { useLogin } from "@/hooks/use-login";
-import LogoutButton from "@/components/auth/logout-button";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -30,10 +29,8 @@ export default function LoginPage() {
     try {
       await loginMutation.mutateAsync(data);
 
-      //   router.push("/");
-    } catch {
-      // Error is handled by useLogin
-    }
+      router.push("/");
+    } catch {}
   };
 
   return (
@@ -42,7 +39,6 @@ export default function LoginPage() {
         <h1 className="text-3xl font-bold">Login</h1>
 
         <p className="mt-2 text-gray-500">Login to your TechNova account</p>
-        <LogoutButton />
 
         <form onSubmit={handleSubmit(onSubmit)} className="mt-6 space-y-5">
           <div>
