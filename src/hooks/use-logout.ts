@@ -1,7 +1,6 @@
 "use client";
 
-import { useMutation } from "@tanstack/react-query";
-import { useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
 import { logoutUser } from "@/services/auth.service";
@@ -14,10 +13,10 @@ export const useLogout = () => {
     return useMutation({
         mutationFn: logoutUser,
 
-        onSuccess: async (response) => {
+        onSuccess: (response) => {
             queryClient.setQueryData(
                 QUERY_KEYS.AUTH.ME,
-                null,
+                null
             );
 
             queryClient.removeQueries({
@@ -25,7 +24,7 @@ export const useLogout = () => {
             });
 
             toast.success(
-                response.message || "Logged out successfully",
+                response.message || "Logged out successfully"
             );
         },
 

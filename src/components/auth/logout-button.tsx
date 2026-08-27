@@ -1,19 +1,18 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-
 import { useLogout } from "@/hooks/use-logout";
 
 export default function LogoutButton() {
   const router = useRouter();
-
   const logoutMutation = useLogout();
 
   const handleLogout = async () => {
     try {
       await logoutMutation.mutateAsync();
 
-      router.push("/login");
+      router.replace("/login");
+      router.refresh();
     } catch {
       // Error handled by useLogout
     }
