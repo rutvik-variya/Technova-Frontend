@@ -6,7 +6,6 @@ import { RegisterInput } from "@/types/auth"
 import { useMutation } from "@tanstack/react-query"
 import { toast } from "sonner"
 
-
 export const useRegister = () => {
     return useMutation({
         mutationFn: (data: RegisterInput) =>

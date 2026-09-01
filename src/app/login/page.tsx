@@ -10,6 +10,7 @@ import { Mail, Lock, Eye, EyeOff, Loader2, ArrowRight } from "lucide-react";
 import { loginSchema, type LoginFormValues } from "@/validations/auth.schema";
 import { useLogin } from "@/hooks/use-login";
 import Button from "@/components/ui/button";
+import { ROUTES } from "@/constants/routes";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -162,7 +163,7 @@ export default function LoginPage() {
         <div className="border-t border-gray-100 pt-6 text-center text-xs text-slate-500">
           Don&apos;t have an account?{" "}
           <Link
-            href="/register"
+            href={ROUTES.REGISTER}
             className="font-bold text-blue-600 hover:text-blue-700 hover:underline"
           >
             Create an account

@@ -13,6 +13,7 @@ import {
 } from "@/validations/auth.schema";
 import { useRegister } from "@/hooks/use-register";
 import Button from "@/components/ui/button";
+import { ROUTES } from "@/constants/routes";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -189,7 +190,7 @@ export default function RegisterPage() {
         <div className="border-t border-gray-100 pt-6 text-center text-xs text-slate-500">
           Already have an account?{" "}
           <Link
-            href="/login"
+            href={ROUTES.LOGIN}
             className="font-bold text-blue-600 hover:text-blue-700 hover:underline"
           >
             Sign in

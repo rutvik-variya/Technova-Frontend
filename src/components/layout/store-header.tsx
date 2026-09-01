@@ -11,6 +11,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import Container from "./container";
+import { ROUTES } from "@/constants/routes";
 
 export default function Header() {
   return (
@@ -40,7 +41,8 @@ export default function Header() {
       <div className="border-b border-gray-100 py-4">
         <Container className="flex items-center justify-between gap-4 sm:gap-8">
           {/* Brand Logo */}
-          <Link href="/" className="flex items-center gap-2">
+
+          <Link href={ROUTES.HOME} className="flex items-center gap-2">
             <span className="text-2xl font-black tracking-tight text-slate-900">
               Tech<span className="text-blue-600">Nova</span>
             </span>
@@ -66,7 +68,7 @@ export default function Header() {
           {/* User Action Items */}
           <div className="flex items-center gap-3 sm:gap-5">
             <Link
-              href="/login"
+              href={ROUTES.LOGIN}
               className="hidden items-center gap-2 text-slate-700 transition hover:text-blue-600 sm:flex"
             >
               <User className="h-5 w-5" />
@@ -77,7 +79,7 @@ export default function Header() {
             </Link>
 
             <Link
-              href="/wishlist"
+              href={ROUTES.WISHLIST}
               className="relative p-2 text-slate-700 hover:text-blue-600"
             >
               <Heart className="h-6 w-6" />
@@ -87,7 +89,7 @@ export default function Header() {
             </Link>
 
             <Link
-              href="/cart"
+              href={ROUTES.CART}
               className="relative flex items-center gap-2 rounded-full bg-blue-50 px-3.5 py-2 text-blue-600 transition hover:bg-blue-100"
             >
               <ShoppingBag className="h-5 w-5" />
@@ -112,34 +114,25 @@ export default function Header() {
       <nav className="hidden border-b border-gray-100 bg-white md:block">
         <Container className="flex items-center gap-8 py-3 text-sm font-medium text-slate-600">
           <Link
-            href="/products"
+            href={ROUTES.HOME}
             className="text-blue-600 font-semibold hover:text-blue-700"
           >
-            All Products
+            Home
           </Link>
           <Link
-            href="/products?category=laptops"
+            href={ROUTES.PRODUCTS}
             className="hover:text-blue-600 transition"
           >
-            Laptops & PC
+            Shop
           </Link>
           <Link
-            href="/products?category=mobiles"
+            href={ROUTES.CONTACT}
             className="hover:text-blue-600 transition"
           >
-            Mobile & Tablets
+            Contact
           </Link>
-          <Link
-            href="/products?category=accessories"
-            className="hover:text-blue-600 transition"
-          >
-            Accessories
-          </Link>
-          <Link
-            href="/products?category=gaming"
-            className="hover:text-blue-600 transition"
-          >
-            Gaming Zone
+          <Link href={ROUTES.ORDERS} className="hover:text-blue-600 transition">
+            Orders
           </Link>
         </Container>
       </nav>
