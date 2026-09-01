@@ -14,6 +14,7 @@ import Container from "@/components/layout/container";
 import Section from "@/components/ui/section";
 import Heading from "@/components/ui/heading";
 import Button from "@/components/ui/button";
+import CategorySection from "@/components/home/category-section";
 
 export default function Home() {
   return (
@@ -149,45 +150,8 @@ export default function Home() {
       </div>
 
       {/* Shop By Category */}
-      <Section>
-        <Container>
-          <Heading
-            title="Explore Tech Categories"
-            description="Find specialized hardware tailored to your productivity and gaming needs."
-          />
 
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-            {[
-              { name: "Laptops & PC", count: "120+ Products", tag: "Tech" },
-              {
-                name: "Mobiles & Tablets",
-                count: "85+ Products",
-                tag: "Gadgets",
-              },
-              {
-                name: "Smart Audio & Speakers",
-                count: "60+ Products",
-                tag: "Sound",
-              },
-              { name: "Gaming Gear", count: "45+ Products", tag: "Setup" },
-            ].map((cat) => (
-              <Link
-                key={cat.name}
-                href="/products"
-                className="group relative overflow-hidden rounded-2xl border border-gray-100 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:border-blue-500 hover:shadow-lg"
-              >
-                <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-50 font-bold text-blue-600 transition group-hover:bg-blue-600 group-hover:text-white">
-                  {cat.tag}
-                </div>
-                <h3 className="text-base font-bold text-slate-900 group-hover:text-blue-600">
-                  {cat.name}
-                </h3>
-                <p className="mt-1 text-xs text-slate-500">{cat.count}</p>
-              </Link>
-            ))}
-          </div>
-        </Container>
-      </Section>
+      <CategorySection />
 
       {/* Featured Products Grid */}
       <Section className="bg-slate-50">

@@ -7,7 +7,6 @@ export interface Category {
     slug: string;
 }
 
-
 export const getCategories = async (): Promise<
     ApiResponse<Category[]>
 > => {
