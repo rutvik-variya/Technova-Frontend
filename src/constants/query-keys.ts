@@ -14,8 +14,9 @@ export const QUERY_KEYS = {
         ALL: ["products"] as const,
         LIST: (params?: unknown) =>
             ["products", "list", params] as const,
+        FEATURED: ["products", "featured"] as const,
         DETAIL: (id: string) =>
-            ["products", "detail", id] as const,
+            ["products", "detail", id] as const
     },
 
     CART: {

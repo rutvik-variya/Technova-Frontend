@@ -37,8 +37,8 @@ export default function RegisterPage() {
     try {
       await registerMutation.mutateAsync(data);
       router.push("/login");
-    } catch {
-      // Error handled by useRegister mutation / toast notification
+    } catch (error) {
+      console.error("Registration failed:", error);
     }
   };
 
@@ -63,7 +63,6 @@ export default function RegisterPage() {
 
         {/* Registration Form */}
         <form onSubmit={handleSubmit(onSubmit)} className="mt-8 space-y-5">
-          {/* Name Field */}
           <div>
             <label
               htmlFor="name"
@@ -94,7 +93,6 @@ export default function RegisterPage() {
             )}
           </div>
 
-          {/* Email Field */}
           <div>
             <label
               htmlFor="email"
@@ -125,7 +123,6 @@ export default function RegisterPage() {
             )}
           </div>
 
-          {/* Password Field */}
           <div>
             <label
               htmlFor="password"
@@ -168,7 +165,6 @@ export default function RegisterPage() {
             )}
           </div>
 
-          {/* Submit Action */}
           <Button
             type="submit"
             disabled={registerMutation.isPending}
@@ -186,7 +182,6 @@ export default function RegisterPage() {
           </Button>
         </form>
 
-        {/* Footer Redirect */}
         <div className="border-t border-gray-100 pt-6 text-center text-xs text-slate-500">
           Already have an account?{" "}
           <Link

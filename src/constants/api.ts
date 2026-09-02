@@ -11,7 +11,8 @@ export const API_ENDPOINTS = {
 
     PRODUCTS: {
         LIST: "/products",
-        DETAIL: (id: string) => `/products/${id}`,
+        FEATURED: "/products/featured",
+        DETAIL: (id: string) => `/products/${id}`
     },
 
     CART: {

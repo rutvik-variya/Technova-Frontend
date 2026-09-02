@@ -13,7 +13,7 @@ export default function Heading({
 }: HeadingProps) {
   return (
     <div className={cn("mb-8", className)}>
-      <h2 className="text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl lg:text-4xl">
+      <h2 className="text-base font-bold tracking-tight text-gray-900 sm:text-[22px] lg:text-[22px]">
         {title}
       </h2>
 

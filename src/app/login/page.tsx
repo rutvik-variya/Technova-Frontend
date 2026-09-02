@@ -33,8 +33,8 @@ export default function LoginPage() {
     try {
       await loginMutation.mutateAsync(data);
       router.push("/");
-    } catch {
-      // Error handling is managed by React Query mutation / toast notifications
+    } catch (error) {
+      console.error("Login failed:", error);
     }
   };
 
