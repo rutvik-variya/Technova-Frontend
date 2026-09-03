@@ -2,6 +2,7 @@ export type productStatus = "DRAFT" | "ACTIVE" | "ARCHIVED";
 
 export interface ProductVariant {
     id: string;
+    productId: string;
     sku?: string;
     ram?: string;
     storage?: string;
@@ -13,6 +14,7 @@ export interface ProductVariant {
 }
 export interface ProductImage {
     id: string;
+    productId: string;
     url: string;
     isPrimary?: boolean;
     displayOrder?: number;
@@ -31,8 +33,8 @@ export interface Product {
     isFeatured: boolean;
     createdAt: string;
     updatedAt: string;
-    images?: ProductImage[];
-    variants?: ProductVariant[];
+    productImages?: ProductImage[];
+    productVariants?: ProductVariant[];
     category?: {
         id: string;
         name: string;

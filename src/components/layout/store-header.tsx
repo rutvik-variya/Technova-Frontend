@@ -12,8 +12,12 @@ import {
 } from "lucide-react";
 import Container from "./container";
 import { ROUTES } from "@/constants/routes";
+import { useCurrentUser } from "@/hooks/use-current-user";
 
 export default function Header() {
+  const { data } = useCurrentUser();
+  const user = data?.data;
+
   return (
     <header className="sticky top-0 z-50 bg-white shadow-sm border-b border-gray-100">
       {/* Top Announcement Bar */}
@@ -68,17 +72,6 @@ export default function Header() {
           {/* User Action Items */}
           <div className="flex items-center gap-3 sm:gap-5">
             <Link
-              href={ROUTES.LOGIN}
-              className="hidden items-center gap-2 text-slate-700 transition hover:text-blue-600 sm:flex"
-            >
-              <User className="h-5 w-5" />
-              <div className="text-left text-xs">
-                <span className="block text-gray-400">Welcome</span>
-                <span className="font-semibold">Sign In</span>
-              </div>
-            </Link>
-
-            <Link
               href={ROUTES.WISHLIST}
               className="relative p-2 text-slate-700 hover:text-blue-600"
             >
@@ -98,6 +91,22 @@ export default function Header() {
                 0
               </span>
             </Link>
+
+            {!user ? (
+              <Link
+                href={ROUTES.LOGIN}
+                className="hidden items-center gap-2 text-slate-700 transition hover:text-blue-600 sm:flex"
+              >
+                <div className="text-left text-xs">
+                  <span className="block text-gray-400">Welcome</span>
+                  <span className="font-semibold">Sign In</span>
+                </div>
+              </Link>
+            ) : (
+              <Link href={ROUTES.PROFILE}>
+                <User className="h-7 w-7" />
+              </Link>
+            )}
 
             <button
               type="button"
