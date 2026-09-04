@@ -1,5 +1,12 @@
 export type productStatus = "DRAFT" | "ACTIVE" | "ARCHIVED";
 
+export interface ProductImage {
+    id: string;
+    productId: string;
+    url: string;
+    isPrimary?: boolean;
+    displayOrder?: number;
+}
 export interface ProductVariant {
     id: string;
     productId: string;
@@ -12,13 +19,7 @@ export interface ProductVariant {
     isActive?: boolean;
 
 }
-export interface ProductImage {
-    id: string;
-    productId: string;
-    url: string;
-    isPrimary?: boolean;
-    displayOrder?: number;
-}
+
 
 export interface Product {
     id: string;
