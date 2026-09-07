@@ -13,17 +13,31 @@ export function ProductCard({ product }: ProductCardProps) {
   const primaryImage =
     product.productImages?.find((img) => img.isPrimary)?.url ||
     product.productImages?.[0]?.url;
-  const displayPrice = product.productVariants?.[0]?.price || product.basePrice;
 
   const productVariants = product.productVariants ?? [];
+
+  // Calculate minimum price among all variants, or fall back to basePrice
+  const minVariantPrice =
+    productVariants.length > 0
+      ? Math.min(...productVariants.map((v) => Number(v.price) || Infinity))
+      : null;
+
+  const rawPrice =
+    minVariantPrice && minVariantPrice !== Infinity
+      ? minVariantPrice
+      : Number(product.basePrice);
+
   const isOutOfStock =
     productVariants.length > 0 && productVariants.every((v) => v.stock === 0);
 
-  const formattedPrice = new Intl.NumberFormat("en-IN", {
-    style: "currency",
-    currency: "INR",
-    maximumFractionDigits: 0,
-  }).format(Number(displayPrice));
+  const formattedPrice =
+    !isNaN(rawPrice) && rawPrice > 0
+      ? new Intl.NumberFormat("en-IN", {
+          style: "currency",
+          currency: "INR",
+          maximumFractionDigits: 0,
+        }).format(rawPrice)
+      : null;
 
   return (
     <div className="group relative flex flex-col overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-xs transition-all duration-300 hover:-translate-y-1 hover:border-blue-200 hover:shadow-xl hover:shadow-slate-200/50">
@@ -94,7 +108,7 @@ export function ProductCard({ product }: ProductCardProps) {
               Starting from
             </span>
             <p className="text-base font-black text-slate-900">
-              {Number(displayPrice) > 0 ? formattedPrice : "Contact for Price"}
+              {formattedPrice ?? "Contact for Price"}
             </p>
           </div>
 

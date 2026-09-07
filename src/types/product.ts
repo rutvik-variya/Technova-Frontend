@@ -19,8 +19,6 @@ export interface ProductVariant {
     isActive?: boolean;
 
 }
-
-
 export interface Product {
     id: string;
     name: string;

@@ -6,11 +6,10 @@ export interface PaginationMeta {
     total: number;
     totalPages: number;
     hasNext: boolean;
-    hasPrevious: boolean
+    hasPrevious: boolean;
 }
 
 export interface ProductListResponse {
     products: Product[];
-    meta: PaginationMeta;
+    pagination: PaginationMeta;
 }
-
