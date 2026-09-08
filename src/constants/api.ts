@@ -1,3 +1,4 @@
+
 export const API_ENDPOINTS = {
     AUTH: {
         REGISTER: "/auth/register",
@@ -12,7 +13,8 @@ export const API_ENDPOINTS = {
     PRODUCTS: {
         LIST: "/products",
         FEATURED: "/products/featured",
-        DETAIL: (id: string) => `/products/${id}`
+        DETAIL: (id: string) => `/products/${id}`,
+        BRAND: "/products/brands"
     },
 
     CART: {

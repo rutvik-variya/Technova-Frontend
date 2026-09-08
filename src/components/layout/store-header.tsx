@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import {
-  Search,
   ShoppingBag,
   Heart,
   User,
@@ -30,10 +29,13 @@ export default function Header() {
               <strong>TECH10</strong>
             </span>
           </div>
+
           <div className="hidden items-center gap-6 sm:flex">
             <span className="flex items-center gap-1.5 hover:text-white transition">
-              <PhoneCall className="h-3.5 w-3.5" /> +91 98765 43210
+              <PhoneCall className="h-3.5 w-3.5" />
+              +91 98765 43210
             </span>
+
             <Link href="/help" className="hover:text-white transition">
               Support
             </Link>
@@ -42,56 +44,75 @@ export default function Header() {
       </div>
 
       {/* Main Header */}
-      <div className="border-b border-gray-100 py-4">
+      <div className="py-4">
         <Container className="flex items-center justify-between gap-4 sm:gap-8">
           {/* Brand Logo */}
-
           <Link href={ROUTES.HOME} className="flex items-center gap-2">
             <span className="text-2xl font-black tracking-tight text-slate-900">
               Tech<span className="text-blue-600">Nova</span>
             </span>
           </Link>
 
-          {/* Search Bar */}
-          <div className="hidden max-w-md flex-1 md:block">
-            <div className="relative">
-              <input
-                type="text"
-                placeholder="Search laptops, smartphones, accessories..."
-                className="w-full rounded-full border border-gray-200 bg-gray-50 py-2.5 pl-4 pr-10 text-sm text-slate-900 outline-none transition duration-200 placeholder:text-gray-400 focus:border-blue-600 focus:bg-white focus:ring-2 focus:ring-blue-100"
-              />
-              <button
-                className="absolute right-1 top-1/2 -translate-y-1/2 rounded-full bg-blue-600 p-2 text-white transition hover:bg-blue-700"
-                aria-label="Search"
-              >
-                <Search className="h-4 w-4" />
-              </button>
-            </div>
-          </div>
+          {/* Navigation Links */}
+          <nav className="hidden flex-1 items-center justify-center gap-8 md:flex">
+            <Link
+              href={ROUTES.HOME}
+              className="font-semibold text-blue-600 transition hover:text-blue-700"
+            >
+              Home
+            </Link>
+
+            <Link
+              href={ROUTES.PRODUCTS}
+              className="font-medium text-slate-600 transition hover:text-blue-600"
+            >
+              Shop
+            </Link>
+
+            <Link
+              href={ROUTES.CONTACT}
+              className="font-medium text-slate-600 transition hover:text-blue-600"
+            >
+              Contact
+            </Link>
+
+            <Link
+              href={ROUTES.ORDERS}
+              className="font-medium text-slate-600 transition hover:text-blue-600"
+            >
+              Orders
+            </Link>
+          </nav>
 
           {/* User Action Items */}
           <div className="flex items-center gap-3 sm:gap-5">
+            {/* Wishlist */}
             <Link
               href={ROUTES.WISHLIST}
-              className="relative p-2 text-slate-700 hover:text-blue-600"
+              className="relative p-2 text-slate-700 transition hover:text-blue-600"
             >
               <Heart className="h-6 w-6" />
+
               <span className="absolute right-0 top-0 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white">
                 0
               </span>
             </Link>
 
+            {/* Cart */}
             <Link
               href={ROUTES.CART}
               className="relative flex items-center gap-2 rounded-full bg-blue-50 px-3.5 py-2 text-blue-600 transition hover:bg-blue-100"
             >
               <ShoppingBag className="h-5 w-5" />
+
               <span className="text-sm font-semibold">Cart</span>
+
               <span className="flex h-5 w-5 items-center justify-center rounded-full bg-blue-600 text-xs font-bold text-white">
                 0
               </span>
             </Link>
 
+            {/* User */}
             {!user ? (
               <Link
                 href={ROUTES.LOGIN}
@@ -103,11 +124,15 @@ export default function Header() {
                 </div>
               </Link>
             ) : (
-              <Link href={ROUTES.PROFILE}>
+              <Link
+                href={ROUTES.PROFILE}
+                className="text-slate-700 transition hover:text-blue-600"
+              >
                 <User className="h-7 w-7" />
               </Link>
             )}
 
+            {/* Mobile Menu */}
             <button
               type="button"
               className="p-2 text-slate-700 md:hidden"
@@ -118,33 +143,6 @@ export default function Header() {
           </div>
         </Container>
       </div>
-
-      {/* Navigation Links */}
-      <nav className="hidden border-b border-gray-100 bg-white md:block">
-        <Container className="flex items-center gap-8 py-3 text-sm font-medium text-slate-600">
-          <Link
-            href={ROUTES.HOME}
-            className="text-blue-600 font-semibold hover:text-blue-700"
-          >
-            Home
-          </Link>
-          <Link
-            href={ROUTES.PRODUCTS}
-            className="hover:text-blue-600 transition"
-          >
-            Shop
-          </Link>
-          <Link
-            href={ROUTES.CONTACT}
-            className="hover:text-blue-600 transition"
-          >
-            Contact
-          </Link>
-          <Link href={ROUTES.ORDERS} className="hover:text-blue-600 transition">
-            Orders
-          </Link>
-        </Container>
-      </nav>
     </header>
   );
 }

@@ -16,7 +16,9 @@ export const QUERY_KEYS = {
             ["products", "list", params] as const,
         FEATURED: ["products", "featured"] as const,
         DETAIL: (id: string) =>
-            ["products", "detail", id] as const
+            ["products", "detail", id] as const,
+
+        BRANDS: ["brands"] as const
     },
 
     CART: {

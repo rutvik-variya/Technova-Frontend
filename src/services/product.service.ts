@@ -1,8 +1,14 @@
 import { API_ENDPOINTS } from "@/constants/api";
 import { getRequest } from "@/lib/api-request";
+import { ApiResponse } from "@/types/api";
 import { Product } from "@/types/product";
 import { ProductQueryParams } from "@/types/product-query";
 import { ProductListResponse } from "@/types/product-response";
+
+
+export interface Brands {
+    brand: string;
+}
 
 export const getFeaturedProducts = async () => {
     return getRequest<Product[]>(
@@ -19,4 +25,11 @@ export const getProducts = async (
     );
 
     return response.data;
+};
+
+
+export const getBrands = async (): Promise<
+    ApiResponse<Brands[]>
+> => {
+    return getRequest<Brands[]>(API_ENDPOINTS.PRODUCTS.BRAND);
 };

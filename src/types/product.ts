@@ -17,7 +17,6 @@ export interface ProductVariant {
     price?: number;
     stock?: number;
     isActive?: boolean;
-
 }
 export interface Product {
     id: string;
