@@ -13,3 +13,9 @@ export interface ProductListResponse {
     products: Product[];
     pagination: PaginationMeta;
 }
+
+export interface ProductDetailResponse {
+    statusCode: number;
+    message: string;
+    data: Product;
+}

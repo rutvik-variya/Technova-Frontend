@@ -27,9 +27,18 @@ export const getProducts = async (
     return response.data;
 };
 
-
 export const getBrands = async (): Promise<
     ApiResponse<Brands[]>
 > => {
     return getRequest<Brands[]>(API_ENDPOINTS.PRODUCTS.BRAND);
+};
+
+
+export const getProductBySlug = async (
+    slug: string
+): Promise<Product> => {
+    const response = await getRequest<Product>(
+        API_ENDPOINTS.PRODUCTS.DETAIL(slug)
+    );
+    return response.data;
 };

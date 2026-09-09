@@ -18,6 +18,12 @@ export interface ProductVariant {
     stock?: number;
     isActive?: boolean;
 }
+
+export interface ProductCategory {
+    id: string;
+    name: string;
+    slug: string;
+}
 export interface Product {
     id: string;
     name: string;
@@ -33,10 +39,6 @@ export interface Product {
     updatedAt: string;
     productImages?: ProductImage[];
     productVariants?: ProductVariant[];
-    category?: {
-        id: string;
-        name: string;
-        slug: string;
-    }
+    category?: ProductCategory
 }
 

@@ -12,7 +12,6 @@ export default function ProductPagination({
   page,
   totalPages,
 }: ProductPaginationProps) {
-  console.log(page, totalPages);
   const router = useRouter();
   const searchParams = useSearchParams();
 
