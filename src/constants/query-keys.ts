@@ -21,15 +21,8 @@ export const QUERY_KEYS = {
     },
 
     CART: {
-        ALL: ["cart"] as const,
-        CURRENT: ["cart", "current"] as const,
+        DETAIL: ["cart"] as const,
     },
-
-    WISHLIST: {
-        ALL: ["wishlist"] as const,
-        CURRENT: ["wishlist", "current"] as const,
-    },
-
     ADDRESSES: {
         ALL: ["addresses"] as const,
         DETAIL: (id: string) =>
@@ -43,4 +36,8 @@ export const QUERY_KEYS = {
         DETAIL: (id: string) =>
             ["orders", "detail", id] as const,
     },
+    WISHLIST: {
+        ALL: ["wishlist"] as const,
+    },
+
 } as const;

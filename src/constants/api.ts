@@ -18,12 +18,11 @@ export const API_ENDPOINTS = {
     },
 
     CART: {
-        CURRENT: "/cart",
-        ADD: "/cart/items",
+        ADD_ITEM: "/cart/",
     },
 
     WISHLIST: {
-        CURRENT: "/wishlist",
+        ADD: "/wishlist/",
     },
 
     ORDERS: {

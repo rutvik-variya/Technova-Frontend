@@ -16,7 +16,7 @@ export default function ProductGallery({
   const [selectedIndex, setSelectedIndex] = useState(0);
 
   const sortedImages = [...images].sort(
-    (a, b) => (a.displayOrder ?? 0) - (b.displayOrder ?? 0)
+    (a, b) => (a.displayOrder ?? 0) - (b.displayOrder ?? 0),
   );
 
   return (
@@ -30,6 +30,7 @@ export default function ProductGallery({
               alt={productName}
               fill
               priority
+              loading="eager"
               sizes="(max-width: 1024px) 100vw, 50vw"
               className="object-contain transition-transform duration-500 hover:scale-105"
             />
@@ -51,7 +52,7 @@ export default function ProductGallery({
                 key={image.id ?? index}
                 type="button"
                 onClick={() => setSelectedIndex(index)}
-                className={`relative aspect-square overflow-hidden rounded-2xl border-2 bg-white transition-all ${
+                className={`relative aspect-square overflow-hidden rounded-2xl border-2 bg-white transitison-all ${
                   isSelected
                     ? "border-blue-600 ring-2 ring-blue-600/20 shadow-sm"
                     : "border-slate-200 hover:border-slate-300 hover:shadow-sm"
@@ -61,6 +62,7 @@ export default function ProductGallery({
                   src={image.url}
                   alt={`${productName} thumbnail ${index + 1}`}
                   fill
+                  loading="lazy"
                   sizes="120px"
                   className="object-cover"
                 />
