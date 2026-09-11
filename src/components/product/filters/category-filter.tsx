@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useCategories } from "@/hooks/use-categories";
+import { useCategories } from "@/hooks/categories/use-categories";
 
 export default function CategoryFilter() {
   const router = useRouter();

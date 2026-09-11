@@ -11,7 +11,7 @@ import {
   registerSchema,
   type RegisterFormValues,
 } from "@/validations/auth.schema";
-import { useRegister } from "@/hooks/use-register";
+import { useRegister } from "@/hooks/auth/use-register";
 import Button from "@/components/ui/button";
 import { ROUTES } from "@/constants/routes";
 

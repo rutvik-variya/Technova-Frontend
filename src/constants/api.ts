@@ -1,4 +1,3 @@
-
 export const API_ENDPOINTS = {
     AUTH: {
         REGISTER: "/auth/register",
@@ -14,7 +13,8 @@ export const API_ENDPOINTS = {
         LIST: "/products",
         FEATURED: "/products/featured",
         DETAIL: (slug: string) => `/products/${slug}`,
-        BRAND: "/products/brands"
+        BRAND: "/products/brands",
+        RELATED: (slug: string) => `/products/${slug}/related`,
     },
 
     CART: {
@@ -24,8 +24,10 @@ export const API_ENDPOINTS = {
     WISHLIST: {
         ADD: "/wishlist/",
     },
-
-    ORDERS: {
-        LIST: "/orders",
-    },
+    REVIEWS: {
+        LIST: (productId: string) => `/reviews/${productId}`,
+        CREATE: (productId: string) => `/reviews/${productId}`,
+        UPDATE: (reviewId: string) => `/reviews/${reviewId}`,
+        DELETE: (reviewId: string) => `/reviews/${reviewId}`
+    }
 } as const;

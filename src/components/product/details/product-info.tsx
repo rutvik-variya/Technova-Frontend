@@ -4,14 +4,8 @@ import { useState } from "react";
 import type { Product, ProductVariant } from "@/types/product";
 import ProductQuantity from "./product-quantity";
 import ProductVariants from "./product-variants";
-import {
-  ShoppingBag,
-  Zap,
-  ShieldCheck,
-  Truck,
-  AlertTriangle,
-} from "lucide-react";
-import { useAddToCart } from "@/hooks/use-add-to-cart";
+import { ShoppingBag, ShieldCheck, Truck, AlertTriangle } from "lucide-react";
+import { useAddToCart } from "@/hooks/cart/use-add-to-cart";
 import { useRouter } from "next/navigation";
 import { ROUTES } from "@/constants/routes";
 import WishlistButton from "./wishlist-button";

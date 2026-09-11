@@ -1,6 +1,6 @@
 "use client";
 
-import { useCategories } from "@/hooks/use-categories";
+import { useCategories } from "@/hooks/categories/use-categories";
 import Section from "../ui/section";
 import Container from "../layout/container";
 import Heading from "../ui/heading";

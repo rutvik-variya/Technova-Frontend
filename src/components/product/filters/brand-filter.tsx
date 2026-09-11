@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useBrands } from "@/hooks/use-brand";
+import { useBrands } from "@/hooks/brand/use-brand";
 
 export default function BrandFilter() {
   const router = useRouter();

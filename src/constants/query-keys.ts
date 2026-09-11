@@ -17,7 +17,9 @@ export const QUERY_KEYS = {
         FEATURED: ["products", "featured"] as const,
         DETAIL: (slug: string) =>
             ["products", "detail", slug] as const,
-        BRANDS: ["brands"] as const
+        BRANDS: ["brands"] as const,
+        RELATED: (slug: string) =>
+            ["products", "related", slug] as const,
     },
 
     CART: {
@@ -39,5 +41,10 @@ export const QUERY_KEYS = {
     WISHLIST: {
         ALL: ["wishlist"] as const,
     },
+    REVIEWS: {
+        PRODUCT: (productId: string) =>
+            ["reviews", "product", productId] as const,
+    },
+
 
 } as const;

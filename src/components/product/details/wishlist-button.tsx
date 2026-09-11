@@ -2,7 +2,7 @@
 
 import { Heart } from "lucide-react";
 
-import { useToggleWishlist } from "@/hooks/use-toggle-wishlist";
+import { useToggleWishlist } from "@/hooks/wishlist/use-toggle-wishlist";
 
 interface WishlistButtonProps {
   productId: string;

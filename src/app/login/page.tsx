@@ -8,7 +8,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Mail, Lock, Eye, EyeOff, Loader2, ArrowRight } from "lucide-react";
 
 import { loginSchema, type LoginFormValues } from "@/validations/auth.schema";
-import { useLogin } from "@/hooks/use-login";
+import { useLogin } from "@/hooks/auth/use-login";
 import Button from "@/components/ui/button";
 import { ROUTES } from "@/constants/routes";
 

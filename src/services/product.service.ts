@@ -42,3 +42,17 @@ export const getProductBySlug = async (
     );
     return response.data;
 };
+
+
+export const getRelatedProducts = async (
+    slug: string
+): Promise<ProductListResponse> => {
+    const response = await getRequest<ProductListResponse>(
+        API_ENDPOINTS.PRODUCTS.RELATED(slug)
+    );
+    return response.data;
+};
+
+
+
+

@@ -1,18 +1,27 @@
 "use client";
 
-import { useProductDetails } from "@/hooks/use-product-detail";
+import { useProductDetails } from "@/hooks/products/use-product-detail";
 import ProductDetailsSkeleton from "./product-details-skeleton";
 import ProductGallery from "./product-gallery";
 import ProductInfo from "./product-info";
 import ProductDescription from "./product-description";
 import { AlertCircle, RefreshCw } from "lucide-react";
+import ProductReviews from "./product-reviews";
+import { useCurrentUser } from "@/hooks/auth/use-current-user";
+import RelatedProducts from "./related-products";
 
 interface ProductDetailsProps {
   slug: string;
 }
 
 export default function ProductDetails({ slug }: ProductDetailsProps) {
-  const { data: product, isLoading, isError, refetch } = useProductDetails(slug);
+  const {
+    data: product,
+    isLoading,
+    isError,
+    refetch,
+  } = useProductDetails(slug);
+  const { data: user } = useCurrentUser();
 
   if (isLoading) {
     return <ProductDetailsSkeleton />;
@@ -29,7 +38,8 @@ export default function ProductDetails({ slug }: ProductDetailsProps) {
             Product Not Found
           </h1>
           <p className="mx-auto mt-2 max-w-md text-sm text-slate-600">
-            We couldn&apos;t load the requested product details. It may have been moved or removed.
+            We couldn&apos;t load the requested product details. It may have
+            been moved or removed.
           </p>
           <button
             onClick={() => refetch?.()}
@@ -58,6 +68,10 @@ export default function ProductDetails({ slug }: ProductDetailsProps) {
       </div>
 
       <ProductDescription description={product.description} />
+
+      <ProductReviews productId={product.id} currentUserId={user?.data.id} />
+
+      <RelatedProducts slug={slug} />
     </section>
   );
 }

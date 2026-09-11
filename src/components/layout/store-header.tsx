@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import Container from "./container";
 import { ROUTES } from "@/constants/routes";
-import { useCurrentUser } from "@/hooks/use-current-user";
+import { useCurrentUser } from "@/hooks/auth/use-current-user";
 
 export default function Header() {
   const { data } = useCurrentUser();

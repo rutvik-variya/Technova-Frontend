@@ -1,12 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { useFeaturedProducts } from "@/hooks/use-featured-products";
 import Section from "../ui/section";
 import Container from "../layout/container";
 import Heading from "../ui/heading";
 import { ProductCard } from "./product-card";
 import { ArrowRight, AlertCircle, RefreshCw } from "lucide-react";
+import { useFeaturedProducts } from "@/hooks/products/use-featured-products";
 
 export default function FeaturedProduct() {
   const { data, isLoading, isError, refetch } = useFeaturedProducts();

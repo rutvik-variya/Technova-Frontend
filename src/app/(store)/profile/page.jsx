@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import ProtectedRoute from "@/components/auth/protected-route";
-import { useCurrentUser } from "@/hooks/use-current-user";
+import { useCurrentUser } from "@/hooks/auth/use-current-user";
 import LogoutButton from "@/components/auth/logout-button";
 import Container from "@/components/layout/container";
 import Section from "@/components/ui/section";

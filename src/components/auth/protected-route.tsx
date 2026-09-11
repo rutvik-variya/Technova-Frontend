@@ -1,6 +1,6 @@
 "use client";
 
-import { useCurrentUser } from "@/hooks/use-current-user";
+import { useCurrentUser } from "@/hooks/auth/use-current-user";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 

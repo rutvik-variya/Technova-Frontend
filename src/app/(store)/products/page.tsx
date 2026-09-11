@@ -10,7 +10,7 @@ import ProductPagination from "@/components/product/product-pagination";
 import ProductSearch from "@/components/product/search/product-search";
 import ProductFilters from "@/components/product/filters/product-filters";
 import ProductSort from "@/components/product/sorting/product-sort";
-import { useProducts } from "@/hooks/use-product";
+import { useProducts } from "@/hooks/products/use-product";
 
 export default function ProductsPage() {
   const searchParams = useSearchParams();
