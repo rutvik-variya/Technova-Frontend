@@ -1,13 +1,11 @@
-export default function CartPage() {
-    return (
-        <section className="mx-auto max-w-7xl px-4 py-12 lg:px-8">
-            <h1 className="text-3xl font-bold">
-                Shopping Cart
-            </h1>
+import CartPage from "@/components/cart/cart-page"
+import Container from "@/components/layout/container";
 
-            <p className="mt-3 text-gray-600">
-                Cart functionality will be implemented later.
-            </p>
-        </section>
-    );
+
+export default function Cart() {
+    return (
+        <Container>
+            < CartPage />
+        </Container>
+    )
 }
