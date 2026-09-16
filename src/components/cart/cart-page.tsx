@@ -1,81 +1,93 @@
 "use client";
 
-import { CartEmpty } from "./cart-empty";
-import { CartSkeleton } from "./cart-skeleton";
-import { CartItem } from "./cart-item";
-import { CartSummary } from "./cart-summary";
 import { useCart } from "@/hooks/cart/use-cart";
+import { CartEmpty } from "./cart-empty";
+import { CartItem } from "./cart-item";
+import { CartSkeleton } from "./cart-skeleton";
+import { CartSummary } from "./cart-summary";
 import { useClearCart } from "@/hooks/cart/use-clear-cart";
+import { AlertCircle, RefreshCw, Trash2, ShoppingBag } from "lucide-react";
 
-export function CartPage() {
+export default function CartPage() {
   const { data: cart, isLoading, isError, refetch } = useCart();
   const clearCartMutation = useClearCart();
+
   if (isLoading) {
     return <CartSkeleton />;
   }
 
   if (isError) {
     return (
-      <section className="container py-10">
-        <div className="flex min-h-60 flex-col items-center justify-center rounded-xl border bg-background p-6 text-center">
-          <h2 className="text-lg font-semibold">Failed to load cart</h2>
-
-          <p className="mt-2 text-sm text-muted-foreground">
-            Something went wrong while loading your cart.
+      <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
+        <div className="relative overflow-hidden rounded-3xl border border-rose-200 bg-rose-50/50 p-8 text-center sm:p-12">
+          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-rose-100 text-rose-600">
+            <AlertCircle className="h-6 w-6" />
+          </div>
+          <h2 className="mt-4 text-xl font-extrabold text-slate-900 sm:text-2xl">
+            Failed to Load Cart
+          </h2>
+          <p className="mx-auto mt-2 max-w-md text-sm font-medium text-slate-600">
+            We ran into an issue retrieving your shopping cart items. Please
+            check your network or try again.
           </p>
-
           <button
             type="button"
             onClick={() => refetch()}
-            className="mt-5 rounded-lg bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground transition hover:opacity-90"
+            className="mt-6 inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-6 py-3 text-sm font-bold text-slate-700 transition hover:bg-slate-50 hover:text-slate-900 shadow-sm active:scale-[0.98]"
           >
-            Try Again
+            <RefreshCw className="h-4 w-4" /> Try Again
           </button>
         </div>
       </section>
     );
   }
 
-  if (!cart || cart.data.cartItems.length === 0) {
+  if (!cart || cart.cartItems.length === 0) {
     return <CartEmpty />;
   }
 
   return (
-    <section className="container py-8 sm:py-10 lg:py-12">
+    <section className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
       {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
-          Shopping Cart
-        </h1>
+      <div className="mb-8 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between border-b border-slate-200/80 pb-6">
+        <div>
+          <div className="flex items-center gap-2.5">
+            <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-blue-50 text-blue-600 border border-blue-100">
+              <ShoppingBag className="h-4 w-4" />
+            </span>
+            <h1 className="text-2xl font-extrabold tracking-tight text-slate-900 sm:text-3xl">
+              Shopping Cart
+            </h1>
+          </div>
+          <p className="mt-1 text-sm font-medium text-slate-500">
+            {cart.totalItem} {cart.totalItem === 1 ? "item" : "items"} currently
+            in your cart
+          </p>
+        </div>
 
-        <p className="mt-2 text-sm text-muted-foreground">
-          {cart.data.totalItem} {cart.data.totalItem === 1 ? "item" : "items"}{" "}
-          in your cart
-        </p>
+        {/* Clear Cart Button */}
+        <button
+          type="button"
+          onClick={() => clearCartMutation.mutate()}
+          disabled={clearCartMutation.isPending}
+          className="inline-flex items-center gap-1.5 self-start sm:self-auto rounded-xl px-3 py-1.5 text-xs font-bold text-slate-500 transition hover:bg-rose-50 hover:text-rose-600 disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          <Trash2 className="h-3.5 w-3.5" />
+          {clearCartMutation.isPending ? "Clearing..." : "Clear Cart"}
+        </button>
       </div>
 
-      {/* Cart Content */}
-      <div className="grid gap-8 lg:grid-cols-[1fr_380px] lg:items-start">
-        {/* Cart Items */}
-        <div className="space-y-4">
-          <div className="flex justify-end">
-            <button
-              type="button"
-              onClick={() => clearCartMutation.mutate()}
-              disabled={clearCartMutation.isPending}
-              className="text-sm font-medium text-muted-foreground transition hover:text-destructive disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              {clearCartMutation.isPending ? "Clearing..." : "Clear Cart"}
-            </button>
-          </div>
-
-          {cart.data.cartItems.map((item) => (
+      {/* Main Grid: Items on Left, Sticky Summary on Right */}
+      <div className="grid gap-8 lg:grid-cols-12 lg:items-start">
+        <div className="space-y-4 lg:col-span-7 xl:col-span-8">
+          {cart.cartItems.map((item) => (
             <CartItem key={item.id} item={item} />
           ))}
         </div>
 
-        {/* Summary */}
-        <CartSummary cart={cart.data} />
+        <div className="lg:col-span-5 xl:col-span-4">
+          <CartSummary cart={cart} />
+        </div>
       </div>
     </section>
   );

@@ -47,9 +47,45 @@ export default function ProductInfo({ product }: ProductInfoProps) {
     }
 
     addToCartMutation.mutate({
-      productId: product.id,
-      variantId: selectedVariant.id,
-      quantity,
+      payload: {
+        productId: product.id,
+        variantId: selectedVariant.id,
+        quantity,
+      },
+
+      optimisticItem: {
+        productId: product.id,
+        variantId: selectedVariant.id,
+        quantity,
+
+        product: {
+          id: product.id,
+          name: product.name,
+          slug: product.slug,
+          brand: product.brand ?? null,
+          status: product.status ?? "",
+          basePrice: String(product.basePrice ?? 0),
+          maxPrice: String(product.maxPrice ?? 0),
+
+          image:
+            product.productImages?.find((image) => image.isPrimary)?.url ??
+            product.productImages?.[0]?.url ??
+            null,
+        },
+
+        variant: {
+          id: selectedVariant.id,
+          productId: product.id,
+          sku: selectedVariant.sku ?? "",
+          ram: selectedVariant.ram ?? null,
+          storage: selectedVariant.storage ?? null,
+          color: selectedVariant.color ?? null,
+          price: String(selectedVariant.price ?? 0),
+          comparePrice: null,
+          stock,
+          isActive: true,
+        },
+      },
     });
   };
 
@@ -60,9 +96,45 @@ export default function ProductInfo({ product }: ProductInfoProps) {
 
     addToCartMutation.mutate(
       {
-        productId: product.id,
-        variantId: selectedVariant.id,
-        quantity,
+        payload: {
+          productId: product.id,
+          variantId: selectedVariant.id,
+          quantity,
+        },
+
+        optimisticItem: {
+          productId: product.id,
+          variantId: selectedVariant.id,
+          quantity,
+
+          product: {
+            id: product.id,
+            name: product.name,
+            slug: product.slug,
+            brand: product.brand ?? null,
+            status: product.status ?? "",
+            basePrice: String(product.basePrice ?? 0),
+            maxPrice: String(product.maxPrice ?? 0),
+
+            image:
+              product.productImages?.find((image) => image.isPrimary)?.url ??
+              product.productImages?.[0]?.url ??
+              null,
+          },
+
+          variant: {
+            id: selectedVariant.id,
+            productId: product.id,
+            sku: selectedVariant.sku ?? "",
+            ram: selectedVariant.ram ?? null,
+            storage: selectedVariant.storage ?? null,
+            color: selectedVariant.color ?? null,
+            price: String(selectedVariant.price ?? 0),
+            comparePrice: null,
+            stock,
+            isActive: true,
+          },
+        },
       },
       {
         onSuccess: () => {

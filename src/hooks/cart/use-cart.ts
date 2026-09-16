@@ -8,9 +8,13 @@ import { getCart } from "@/services/cart.service";
 export const useCart = () => {
     return useQuery({
         queryKey: QUERY_KEYS.CART.DETAIL,
+
         queryFn: getCart,
+
         staleTime: 2 * 60 * 1000,
+
         refetchOnWindowFocus: false,
+
         retry: 1,
     });
 };

@@ -15,48 +15,37 @@ export function CartItemQuantity({
   stock,
 }: CartItemQuantityProps) {
   const updateCartMutation = useUpdateCart();
-
   const isUpdating = updateCartMutation.isPending;
 
   const decreaseQuantity = () => {
-    if (quantity <= 1 || isUpdating) {
-      return;
-    }
-
+    if (quantity <= 1 || isUpdating) return;
     updateCartMutation.mutate({
       itemId,
-      payload: {
-        quantity: quantity - 1,
-      },
+      payload: { quantity: quantity - 1 },
     });
   };
 
   const increaseQuantity = () => {
-    if (quantity >= stock || isUpdating) {
-      return;
-    }
-
+    if (quantity >= stock || isUpdating) return;
     updateCartMutation.mutate({
       itemId,
-      payload: {
-        quantity: quantity + 1,
-      },
+      payload: { quantity: quantity + 1 },
     });
   };
 
   return (
-    <div className="flex items-center">
+    <div className="inline-flex items-center rounded-2xl border border-slate-200 bg-slate-50/50 p-1">
       <button
         type="button"
         onClick={decreaseQuantity}
         disabled={quantity <= 1 || isUpdating}
         aria-label="Decrease quantity"
-        className="flex h-9 w-9 items-center justify-center rounded-l-lg border bg-background transition hover:bg-muted disabled:cursor-not-allowed disabled:opacity-50"
+        className="flex h-7 w-7 items-center justify-center rounded-xl bg-white text-slate-700 transition hover:bg-slate-100 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-40 shadow-sm"
       >
-        <Minus className="h-4 w-4" />
+        <Minus className="h-3.5 w-3.5" />
       </button>
 
-      <div className="flex h-9 min-w-10 items-center justify-center border-y bg-background px-3 text-sm font-medium">
+      <div className="flex h-7 min-w-8 items-center justify-center px-2 text-xs font-bold text-slate-900">
         {isUpdating ? "..." : quantity}
       </div>
 
@@ -65,9 +54,9 @@ export function CartItemQuantity({
         onClick={increaseQuantity}
         disabled={quantity >= stock || isUpdating}
         aria-label="Increase quantity"
-        className="flex h-9 w-9 items-center justify-center rounded-r-lg border bg-background transition hover:bg-muted disabled:cursor-not-allowed disabled:opacity-50"
+        className="flex h-7 w-7 items-center justify-center rounded-xl bg-white text-slate-700 transition hover:bg-slate-100 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-40 shadow-sm"
       >
-        <Plus className="h-4 w-4" />
+        <Plus className="h-3.5 w-3.5" />
       </button>
     </div>
   );

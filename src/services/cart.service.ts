@@ -1,75 +1,67 @@
-import { API_ENDPOINTS } from "@/constants/api"
-import { deleteRequest, getRequest, patchRequest, postRequest } from "@/lib/api-request"
-import { Cart, CartItem } from "@/types/cart";
+import {
+    deleteRequest,
+    getRequest,
+    patchRequest,
+    postRequest,
+} from "@/lib/api-request";
 
-export interface AddToCartPayload {
-    productId: string,
-    variantId: string,
-    quantity: number
-}
+import { API_ENDPOINTS } from "@/constants/api";
 
-export interface UpdateCartItemPayload {
-    quantity: number;
-}
+import type {
+    AddToCartPayload,
+    AddToCartResponse,
+    Cart,
+    ClearCartResponse,
+    RemoveCartItemResponse,
+    UpdateCartItemPayload,
+    UpdateCartItemResponse,
+} from "@/types/cart";
 
-export interface AddToCartResponse {
-    cartId: string;
-}
+export const getCart = async (): Promise<Cart> => {
+    const response = await getRequest<Cart>(
+        API_ENDPOINTS.CART.DETAIL
+    );
 
-export interface UpdateCartItemResponse {
-    cartId: string;
-    itemId: string;
-    quantity: number;
-}
-
-export interface RemoveCartItemResponse {
-    cartId: string;
-    itemId: string;
-}
-
-export interface ClearCartResponse {
-    id: string;
-    subtotal: number;
-    totalItem: number;
-    cartItems: CartItem[];
-}
-
-export const getCart = async (): ReturnType<typeof getRequest<Cart>> => {
-    return getRequest<Cart>(API_ENDPOINTS.CART.DETAIL);
+    return response.data;
 };
 
 export const addToCart = async (
     payload: AddToCartPayload
-): ReturnType<typeof postRequest<string>> => {
-    return postRequest<string>(
+): Promise<AddToCartResponse> => {
+    const response = await postRequest<AddToCartResponse>(
         API_ENDPOINTS.CART.ADD_ITEM,
         payload
-    )
-}
+    );
 
+    return response.data;
+};
 
 export const updateCartItem = async (
     itemId: string,
     payload: UpdateCartItemPayload
-): ReturnType<typeof patchRequest<UpdateCartItemResponse>> => {
-    return patchRequest<UpdateCartItemResponse>(
+): Promise<UpdateCartItemResponse> => {
+    const response = await patchRequest<UpdateCartItemResponse>(
         API_ENDPOINTS.CART.UPDATE_ITEM(itemId),
         payload
     );
-};
 
+    return response.data;
+};
 
 export const removeCartItem = async (
     itemId: string
-): ReturnType<typeof deleteRequest<RemoveCartItemResponse>> => {
-    return deleteRequest<RemoveCartItemResponse>(
+): Promise<RemoveCartItemResponse> => {
+    const response = await deleteRequest<RemoveCartItemResponse>(
         API_ENDPOINTS.CART.REMOVE_ITEM(itemId)
     );
+
+    return response.data;
 };
 
-
-export const clearCart = async (): ReturnType<typeof deleteRequest<ClearCartResponse>> => {
-    return deleteRequest<ClearCartResponse>(
+export const clearCart = async (): Promise<ClearCartResponse> => {
+    const response = await deleteRequest<ClearCartResponse>(
         API_ENDPOINTS.CART.CLEAR
     );
+
+    return response.data;
 };

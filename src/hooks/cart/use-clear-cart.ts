@@ -1,10 +1,16 @@
 "use client";
 
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+    useMutation,
+    useQueryClient,
+} from "@tanstack/react-query";
+
 import { toast } from "sonner";
 
 import { QUERY_KEYS } from "@/constants/query-keys";
 import { clearCart } from "@/services/cart.service";
+
+import type { Cart } from "@/types/cart";
 import { getApiError } from "@/lib/api-error";
 
 export const useClearCart = () => {
@@ -14,11 +20,23 @@ export const useClearCart = () => {
         mutationFn: clearCart,
 
         onSuccess: (response) => {
-            toast.success(response.message || "Cart cleared successfully");
+            queryClient.setQueryData<Cart>(
+                QUERY_KEYS.CART.DETAIL,
+                (oldCart) => {
+                    if (!oldCart) {
+                        return oldCart;
+                    }
 
-            queryClient.invalidateQueries({
-                queryKey: QUERY_KEYS.CART.DETAIL,
-            });
+                    return {
+                        ...oldCart,
+                        subtotal: String(response.subtotal),
+                        totalItem: response.totalItem,
+                        cartItems: [],
+                    };
+                }
+            );
+
+            toast.success("Cart cleared successfully");
         },
 
         onError: (error: unknown) => {
