@@ -1,23 +1,51 @@
-import { postRequest } from "@/lib/api-request";
+import {
+    deleteRequest,
+    getRequest,
+    postRequest,
+} from "@/lib/api-request";
+
 import { API_ENDPOINTS } from "@/constants/api";
 
-export interface AddToWishlistPayload {
-    productId: string;
-}
+import type {
+    AddWishlistPayload,
+    WishlistResponse,
+} from "@/types/wishlist";
 
-export interface WishlistItem {
-    id: string;
-    userId: string;
-    productId: string;
-    createdAt: string;
-    updatedAt: string;
-}
+export const getWishlist = async (): Promise<WishlistResponse> => {
+    const response = await getRequest<WishlistResponse>(
+        API_ENDPOINTS.WISHLIST.ALL
+    );
 
-export const addToWishlist = async (
-    payload: AddToWishlistPayload
+    return response.data;
+};
+
+export const addWishlist = async (
+    payload: AddWishlistPayload
 ) => {
-    return postRequest<WishlistItem>(
+    return postRequest(
         API_ENDPOINTS.WISHLIST.ADD,
         payload
+    );
+};
+
+export const removeWishlist = async (
+    productId: string
+) => {
+    return deleteRequest(
+        API_ENDPOINTS.WISHLIST.REMOVE(productId)
+    );
+};
+
+export const clearWishlist = async () => {
+    return deleteRequest(
+        API_ENDPOINTS.WISHLIST.CLEAR
+    );
+};
+
+export const moveWishlistToCart = async (
+    productId: string
+) => {
+    return postRequest(
+        API_ENDPOINTS.WISHLIST.MOVE_TO_CART(productId)
     );
 };

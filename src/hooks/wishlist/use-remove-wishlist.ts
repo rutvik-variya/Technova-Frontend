@@ -1,31 +1,33 @@
 "use client";
 
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { toast } from "sonner";
+import {
+    useMutation,
+    useQueryClient,
+} from "@tanstack/react-query";
 
 import {
-    addToWishlist,
-    type AddToWishlistPayload,
+    removeWishlist,
 } from "@/services/wishlist.service";
 
-import { QUERY_KEYS } from "@/constants/query-keys";
+import {
+    QUERY_KEYS,
+} from "@/constants/query-keys";
+import { toast } from "sonner";
 import { getApiError } from "@/lib/api-error";
 
-export const useToggleWishlist = () => {
+export const useRemoveWishlist = () => {
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: (payload: AddToWishlistPayload) =>
-            addToWishlist(payload),
+        mutationFn: (productId: string) =>
+            removeWishlist(productId),
 
         onSuccess: (response) => {
-            toast.success(response.message || "Product added to wishlist");
-
+            toast.success(response.message || "Product remove from wishlist!");
             queryClient.invalidateQueries({
                 queryKey: QUERY_KEYS.WISHLIST.ALL,
             });
         },
-
         onError: (error: unknown) => {
             const apiError = getApiError(error);
             toast.error(apiError.message)

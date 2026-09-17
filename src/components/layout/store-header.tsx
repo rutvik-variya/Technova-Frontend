@@ -12,10 +12,14 @@ import {
 import Container from "./container";
 import { ROUTES } from "@/constants/routes";
 import { useCurrentUser } from "@/hooks/auth/use-current-user";
+import { useCart } from "@/hooks/cart/use-cart";
 
 export default function Header() {
   const { data } = useCurrentUser();
   const user = data?.data;
+
+  const { data: cart } = useCart();
+  const cartItemCount = cart?.totalItem ?? 0;
 
   return (
     <header className="sticky top-0 z-50 bg-white shadow-sm border-b border-gray-100">
@@ -108,7 +112,7 @@ export default function Header() {
               <span className="text-sm font-semibold">Cart</span>
 
               <span className="flex h-5 w-5 items-center justify-center rounded-full bg-blue-600 text-xs font-bold text-white">
-                0
+                {cartItemCount}
               </span>
             </Link>
 

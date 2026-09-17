@@ -16,10 +16,6 @@ export const API_ENDPOINTS = {
         BRAND: "/products/brands",
         RELATED: (slug: string) => `/products/${slug}/related`,
     },
-
-    WISHLIST: {
-        ADD: "/wishlist/",
-    },
     REVIEWS: {
         LIST: (productId: string) => `/reviews/${productId}`,
         CREATE: (productId: string) => `/reviews/${productId}`,
@@ -32,5 +28,14 @@ export const API_ENDPOINTS = {
         UPDATE_ITEM: (itemId: string) => `/cart/item/${itemId}`,
         REMOVE_ITEM: (itemId: string) => `/cart/item/${itemId}`,
         CLEAR: "/cart",
+    },
+    WISHLIST: {
+        ALL: "/wishlist/",
+        ADD: "/wishlist/",
+        REMOVE: (productId: string) => `/wishlist/${productId}`,
+        CLEAR: "/wishlist/",
+        MOVE_TO_CART: (productId: string) =>
+            `/wishlist/${productId}/move-to-cart`,
+        SYNC: "/wishlist/sync",
     },
 } as const;
