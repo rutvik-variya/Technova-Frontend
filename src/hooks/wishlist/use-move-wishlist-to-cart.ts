@@ -4,6 +4,7 @@ import {
     useMutation,
     useQueryClient,
 } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 import {
     moveWishlistToCart,
@@ -14,34 +15,40 @@ import {
 } from "@/constants/query-keys";
 
 export const useMoveWishlistToCart = () => {
-    const queryClient = useQueryClient();
+    const queryClient =
+        useQueryClient();
 
     return useMutation({
         mutationFn: (productId: string) =>
             moveWishlistToCart(productId),
 
         onSuccess: (_, productId) => {
-            queryClient.setQueryData<unknown[]>(
+            queryClient.setQueryData(
                 QUERY_KEYS.WISHLIST.ALL,
-                (oldWishlist) => {
-                    if (!oldWishlist) {
+                (oldData: unknown) => {
+                    type WishlistItem = {
+                        product?: {
+                            id?: string;
+                        };
+                    };
+
+                    if (!Array.isArray(oldData)) {
                         return [];
                     }
 
-                    return oldWishlist.filter((item: unknown) => {
-                        if (typeof item !== "object" || item === null) {
-                            return true;
-                        }
-
-                        const product = (item as { product?: { id?: string } }).product;
-                        return product?.id !== productId;
-                    });
+                    return (oldData as WishlistItem[]).filter(
+                        (item) => item.product?.id !== productId
+                    );
                 }
             );
 
             queryClient.invalidateQueries({
                 queryKey: QUERY_KEYS.CART.DETAIL,
             });
+
+            toast.success(
+                "Wishlist item moved to cart"
+            );
         },
     });
 };

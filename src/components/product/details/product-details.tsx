@@ -57,6 +57,7 @@ export default function ProductDetails({ slug }: ProductDetailsProps) {
       <div className="grid gap-12 lg:grid-cols-12 lg:gap-16">
         <div className="lg:col-span-7">
           <ProductGallery
+            product={product}
             images={product.productImages ?? []}
             productName={product.name}
           />

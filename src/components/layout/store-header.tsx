@@ -13,6 +13,7 @@ import Container from "./container";
 import { ROUTES } from "@/constants/routes";
 import { useCurrentUser } from "@/hooks/auth/use-current-user";
 import { useCart } from "@/hooks/cart/use-cart";
+import { useWishlistCount } from "../../hooks/wishlist/use-wishlist-count";
 
 export default function Header() {
   const { data } = useCurrentUser();
@@ -21,6 +22,7 @@ export default function Header() {
   const { data: cart } = useCart();
   const cartItemCount = cart?.totalItem ?? 0;
 
+  const { count: wishlistCount } = useWishlistCount();
   return (
     <header className="sticky top-0 z-50 bg-white shadow-sm border-b border-gray-100">
       {/* Top Announcement Bar */}
@@ -90,16 +92,17 @@ export default function Header() {
 
           {/* User Action Items */}
           <div className="flex items-center gap-3 sm:gap-5">
-            {/* Wishlist */}
             <Link
               href={ROUTES.WISHLIST}
               className="relative p-2 text-slate-700 transition hover:text-blue-600"
             >
               <Heart className="h-6 w-6" />
 
-              <span className="absolute right-0 top-0 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white">
-                0
-              </span>
+              {wishlistCount > 0 && (
+                <span className="absolute -top-1 -right-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-bold text-white shadow-sm">
+                  {wishlistCount > 99 ? "99+" : wishlistCount}
+                </span>
+              )}
             </Link>
 
             {/* Cart */}

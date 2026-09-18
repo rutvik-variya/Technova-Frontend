@@ -1,15 +1,18 @@
 "use client";
 
-import { ProductImage } from "@/types/product";
-import Image from "next/image";
 import { useState } from "react";
+import Image from "next/image";
+import type { Product, ProductImage } from "@/types/product";
+import { WishlistButton } from "./wishlist-button";
 
 interface ProductGalleryProps {
+  product: Product;
   images: ProductImage[];
   productName: string;
 }
 
 export default function ProductGallery({
+  product,
   images,
   productName,
 }: ProductGalleryProps) {
@@ -23,6 +26,15 @@ export default function ProductGallery({
     <div className="space-y-4">
       {/* Main Image Frame */}
       <div className="relative aspect-square overflow-hidden rounded-3xl border border-slate-200 bg-slate-50 p-6 transition-all">
+        {/* Floating Wishlist Button with custom border & increased size */}
+        <div className="absolute right-4 top-4 z-10">
+          <WishlistButton
+            product={product}
+            className="h-12 w-12 border border-slate-200/80 bg-white/90 shadow-xs backdrop-blur-md hover:border-blue-200 hover:bg-white"
+            iconClassName="h-6 w-6"
+          />
+        </div>
+
         <div className="relative h-full w-full">
           {sortedImages[selectedIndex]?.url ? (
             <Image
@@ -52,7 +64,7 @@ export default function ProductGallery({
                 key={image.id ?? index}
                 type="button"
                 onClick={() => setSelectedIndex(index)}
-                className={`relative aspect-square overflow-hidden rounded-2xl border-2 bg-white transitison-all ${
+                className={`relative aspect-square overflow-hidden rounded-2xl border-2 bg-white transition-all ${
                   isSelected
                     ? "border-blue-600 ring-2 ring-blue-600/20 shadow-sm"
                     : "border-slate-200 hover:border-slate-300 hover:shadow-sm"

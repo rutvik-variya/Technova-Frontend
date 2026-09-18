@@ -1,34 +1,98 @@
 "use client";
 
 import { Heart } from "lucide-react";
+import { toast } from "sonner";
 
-import { useToggleWishlist } from "@/hooks/wishlist/use-toggle-wishlist";
+import { useCurrentUser } from "@/hooks/auth/use-current-user";
+import { useAddWishlist } from "@/hooks/wishlist/use-add-wishlist";
+import { useRemoveWishlist } from "@/hooks/wishlist/use-remove-wishlist";
+import { useWishlistStatus } from "@/hooks/wishlist/use-wishlist-status";
+import { useWishlistStore } from "@/store/wishlist.store";
+
+import type { Product } from "@/types/product";
 
 interface WishlistButtonProps {
-  productId: string;
+  product: Product;
+  className?: string;
+  iconClassName?: string;
 }
 
-export default function WishlistButton({ productId }: WishlistButtonProps) {
-  // const wishlistMutation = useToggleWishlist();
+export function WishlistButton({
+  product,
+  className = "",
+  iconClassName = "",
+}: WishlistButtonProps) {
+  const { data: currentUser } = useCurrentUser();
+  const user = currentUser?.data;
 
-  // const handleWishlist = () => {
-  //   if (wishlistMutation.isPending) {
-  //     return;
-  //   }
+  const addMutation = useAddWishlist();
+  const removeMutation = useRemoveWishlist();
 
-  //   wishlistMutation.mutate({
-  //     productId,
-  //   });
-  // };
+  const addGuestItem = useWishlistStore((state) => state.addItem);
+  const removeGuestItem = useWishlistStore((state) => state.removeItem);
+
+  const { isWishlisted, isLoading } = useWishlistStatus(product.id);
+
+  const isPending = addMutation.isPending || removeMutation.isPending;
+
+  const handleToggle = (e: React.MouseEvent<HTMLButtonElement>) => {
+    // Prevent navigating if wrapped near links
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (isPending || isLoading) return;
+
+    if (!user) {
+      if (isWishlisted) {
+        removeGuestItem(product.id);
+        toast.success("Removed from wishlist");
+      } else {
+        const primaryImage =
+          product.productImages?.find((image) => image.isPrimary) ??
+          product.productImages?.[0];
+
+        addGuestItem({
+          productId: product.id,
+          slug: product.slug,
+          name: product.name,
+          brand: product.brand ?? null,
+          image: primaryImage?.url ?? null,
+          basePrice: product.basePrice,
+          maxPrice: product.maxPrice,
+          categoryName: product.category?.name ?? null,
+        });
+
+        toast.success("Added to wishlist");
+      }
+      return;
+    }
+
+    if (isWishlisted) {
+      removeMutation.mutate(product.id, {
+        onSuccess: () => toast.success("Removed from wishlist"),
+      });
+      return;
+    }
+
+    addMutation.mutate(
+      { productId: product.id },
+      { onSuccess: () => toast.success("Added to wishlist") },
+    );
+  };
 
   return (
     <button
       type="button"
-      aria-label="Add to wishlist"
-      className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl border border-slate-300 px-6 py-3.5 text-sm font-semibold text-slate-900 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
+      onClick={handleToggle}
+      disabled={isPending || isLoading}
+      aria-label={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
+      className={`absolute right-3 top-3 z-20 flex h-9 w-9 items-center justify-center rounded-full border border-slate-200/80 bg-white/80 text-slate-600 backdrop-blur-md shadow-xs transition-all duration-200 hover:scale-110 hover:border-slate-300 hover:bg-white hover:text-red-500 disabled:cursor-not-allowed disabled:opacity-50 ${className}`}
     >
-      <Heart className="h-5 w-5" />
-      Add to Wishlist
+      <Heart
+        className={`h-4 w-4 transition-colors ${
+          isWishlisted ? "fill-red-500 text-red-500" : ""
+        } ${iconClassName}`}
+      />
     </button>
   );
 }

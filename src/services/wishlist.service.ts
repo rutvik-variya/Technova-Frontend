@@ -49,3 +49,15 @@ export const moveWishlistToCart = async (
         API_ENDPOINTS.WISHLIST.MOVE_TO_CART(productId)
     );
 };
+
+
+export const syncWishlist = async (
+    productIds: string[]
+) => {
+    return postRequest(
+        API_ENDPOINTS.WISHLIST.SYNC,
+        {
+            productIds,
+        }
+    );
+};

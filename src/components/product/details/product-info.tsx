@@ -8,7 +8,7 @@ import { ShoppingBag, ShieldCheck, Truck, AlertTriangle } from "lucide-react";
 import { useAddToCart } from "@/hooks/cart/use-add-to-cart";
 import { useRouter } from "next/navigation";
 import { ROUTES } from "@/constants/routes";
-import WishlistButton from "./wishlist-button";
+import { WishlistButton } from "./wishlist-button";
 
 interface ProductInfoProps {
   product: Product;
@@ -153,19 +153,16 @@ export default function ProductInfo({ product }: ProductInfoProps) {
             {product.brand}
           </span>
         )}
-
         {/* Product Name */}
         <h1 className="mt-3 text-3xl font-extrabold text-slate-900 tracking-tight sm:text-4xl">
           {product.name}
         </h1>
-
         {/* Short Description */}
         {product.shortDescription && (
           <p className="mt-3 text-sm text-slate-600 leading-relaxed">
             {product.shortDescription}
           </p>
         )}
-
         {/* Price display */}
         <div className="mt-6 flex items-baseline gap-3">
           <span className="text-4xl font-extrabold text-slate-900 tracking-tight">
@@ -175,16 +172,13 @@ export default function ProductInfo({ product }: ProductInfoProps) {
             Inclusive of all taxes
           </span>
         </div>
-
         <div className="mt-6 h-px w-full bg-slate-200" />
-
         {/* Variant Selectors */}
         <ProductVariants
           variants={product.productVariants ?? []}
           selectedVariant={selectedVariant}
           onChange={handleVariantChange}
         />
-
         {/* Stock Status & SKU */}
         <div className="mt-6 flex items-center justify-between">
           <div>
@@ -211,7 +205,6 @@ export default function ProductInfo({ product }: ProductInfoProps) {
             </span>
           )}
         </div>
-
         {/* Quantity Controls */}
         {!isOutOfStock && (
           <ProductQuantity
@@ -220,7 +213,6 @@ export default function ProductInfo({ product }: ProductInfoProps) {
             onChange={setQuantity}
           />
         )}
-
         {!isOutOfStock && isQuantityInvalid && (
           <p className="mt-2 flex items-center gap-1.5 text-xs font-medium text-rose-600">
             <AlertTriangle className="h-3.5 w-3.5" />
@@ -230,30 +222,34 @@ export default function ProductInfo({ product }: ProductInfoProps) {
 
         {/* CTA Buttons */}
         <div className="mt-8 space-y-3">
-          <button
-            type="button"
-            onClick={handleAddToCart}
-            disabled={!canAddToCart}
-            className="flex w-full items-center justify-center gap-2 rounded-2xl bg-blue-600 py-4 text-sm font-bold text-white transition-all hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-600/25 active:scale-[0.99] disabled:cursor-not-allowed disabled:bg-slate-200 disabled:text-slate-400 disabled:shadow-none"
-          >
-            <ShoppingBag className="h-5 w-5" />
-            {isOutOfStock
-              ? "Out of Stock"
-              : addToCartMutation.isPending
-                ? "Adding"
-                : "Add to Cart"}
-          </button>
+          {/* Add to Cart + Wishlist */}
+          <div className="flex items-center gap-3">
+            {/* Add to Cart */}
+            <button
+              type="button"
+              onClick={handleAddToCart}
+              disabled={!canAddToCart}
+              className="flex flex-1 items-center justify-center gap-2 rounded-2xl bg-blue-600 py-4 text-sm font-bold text-white transition-all hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-600/25 active:scale-[0.99] disabled:cursor-not-allowed disabled:bg-slate-200 disabled:text-slate-400 disabled:shadow-none"
+            >
+              <ShoppingBag className="h-5 w-5" />
 
+              {isOutOfStock
+                ? "Out of Stock"
+                : addToCartMutation.isPending
+                  ? "Adding..."
+                  : "Add to Cart"}
+            </button>
+          </div>
+
+          {/* Buy Now */}
           <button
             type="button"
             onClick={handleBuyNow}
             disabled={!canAddToCart}
-            className="mt-3 w-full rounded-xl border border-slate-300 px-6 py-3.5 text-sm font-semibold text-slate-900 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
+            className="w-full rounded-2xl border border-slate-300 py-3.5 text-sm font-semibold text-slate-900 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
           >
             {addToCartMutation.isPending ? "Processing..." : "Buy Now"}
           </button>
-
-          <WishlistButton productId={product.id} />
         </div>
       </div>
 

@@ -2,8 +2,9 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { Heart, ShoppingBag, Eye, Laptop } from "lucide-react";
+import { ShoppingBag, Eye, Laptop } from "lucide-react";
 import type { Product } from "@/types/product";
+import { WishlistButton } from "./details/wishlist-button";
 
 interface ProductCardProps {
   product: Product;
@@ -16,7 +17,6 @@ export function ProductCard({ product }: ProductCardProps) {
 
   const productVariants = product.productVariants ?? [];
 
-  // Calculate minimum price among all variants, or fall back to basePrice
   const minVariantPrice =
     productVariants.length > 0
       ? Math.min(...productVariants.map((v) => Number(v.price) || Infinity))
@@ -41,49 +41,49 @@ export function ProductCard({ product }: ProductCardProps) {
 
   return (
     <div className="group relative flex flex-col overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-xs transition-all duration-300 hover:-translate-y-1 hover:border-blue-200 hover:shadow-xl hover:shadow-slate-200/50">
-      <div className="absolute left-3 top-3 z-10 flex flex-col gap-1">
-        {product.brand && (
-          <span className="rounded-md bg-slate-900/80 px-2.5 py-1 text-[10px] font-bold text-white uppercase tracking-wider backdrop-blur-xs">
-            {product.brand}
-          </span>
-        )}
-        {isOutOfStock && (
-          <span className="rounded-md bg-red-500 px-2.5 py-1 text-[10px] font-bold text-white uppercase tracking-wider">
-            Sold Out
-          </span>
-        )}
+      {/* Top Media / Preview Wrapper */}
+      <div className="relative aspect-square w-full overflow-hidden bg-slate-50">
+        {/* Top-Left Badges */}
+        <div className="absolute left-3 top-3 z-10 flex flex-col gap-1 pointer-events-none">
+          {product.brand && (
+            <span className="rounded-md bg-slate-900/80 px-2.5 py-1 text-[10px] font-bold text-white uppercase tracking-wider backdrop-blur-xs">
+              {product.brand}
+            </span>
+          )}
+          {isOutOfStock && (
+            <span className="rounded-md bg-red-500/90 px-2.5 py-1 text-[10px] font-bold text-white uppercase tracking-wider backdrop-blur-xs">
+              Sold Out
+            </span>
+          )}
+        </div>
+
+        {/* Top-Right Wishlist Action */}
+        <WishlistButton product={product} />
+
+        {/* Image / Link Target */}
+        <Link
+          href={`/products/${product.slug}`}
+          className="flex h-full w-full items-center justify-center p-6"
+        >
+          {primaryImage ? (
+            <Image
+              src={primaryImage}
+              alt={product.name}
+              fill
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+              className="object-contain transition-transform duration-500 group-hover:scale-105"
+              loading="eager"
+            />
+          ) : (
+            <div className="flex flex-col items-center justify-center gap-2 text-slate-300">
+              <Laptop className="h-12 w-12" />
+              <span className="text-xs font-medium text-slate-400">
+                No Image
+              </span>
+            </div>
+          )}
+        </Link>
       </div>
-
-      {/* Wishlist Button */}
-      <button
-        type="button"
-        className="absolute right-3 top-3 z-10 flex h-8 w-8 items-center justify-center rounded-xl bg-white/80 text-slate-600 backdrop-blur-md transition-all duration-200 hover:bg-white hover:text-red-500 hover:shadow-sm"
-        aria-label="Add to wishlist"
-      >
-        <Heart className="h-4 w-4" />
-      </button>
-
-      {/* Image Preview Container */}
-      <Link
-        href={`/products/${product.slug}`}
-        className="relative aspect-square w-full overflow-hidden bg-slate-50 flex items-center justify-center p-6"
-      >
-        {primaryImage ? (
-          <Image
-            src={primaryImage}
-            alt={product.name}
-            fill
-            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-            className="object-contain transition-transform duration-500 group-hover:scale-105"
-            loading="eager"
-          />
-        ) : (
-          <div className="flex flex-col items-center justify-center gap-2 text-slate-300">
-            <Laptop className="h-12 w-12" />
-            <span className="text-xs font-medium text-slate-400">No Image</span>
-          </div>
-        )}
-      </Link>
 
       {/* Content Details */}
       <div className="flex flex-1 flex-col p-5">
@@ -101,7 +101,7 @@ export function ProductCard({ product }: ProductCardProps) {
           {product.description}
         </p>
 
-        {/* Price & Action */}
+        {/* Price & Action Footer */}
         <div className="mt-auto pt-4 flex items-center justify-between border-t border-slate-50">
           <div>
             <span className="text-[10px] text-slate-400 block font-medium">

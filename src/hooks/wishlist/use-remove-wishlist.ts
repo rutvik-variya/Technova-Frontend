@@ -4,6 +4,7 @@ import {
     useMutation,
     useQueryClient,
 } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 import {
     removeWishlist,
@@ -12,25 +13,32 @@ import {
 import {
     QUERY_KEYS,
 } from "@/constants/query-keys";
-import { toast } from "sonner";
-import { getApiError } from "@/lib/api-error";
+
+import type {
+    WishlistItem,
+} from "@/types/wishlist";
 
 export const useRemoveWishlist = () => {
-    const queryClient = useQueryClient();
+    const queryClient =
+        useQueryClient();
 
     return useMutation({
         mutationFn: (productId: string) =>
             removeWishlist(productId),
 
-        onSuccess: (response) => {
-            toast.success(response.message || "Product remove from wishlist!");
-            queryClient.invalidateQueries({
-                queryKey: QUERY_KEYS.WISHLIST.ALL,
-            });
-        },
-        onError: (error: unknown) => {
-            const apiError = getApiError(error);
-            toast.error(apiError.message)
+        onSuccess: (_, productId) => {
+            queryClient.setQueryData<WishlistItem[]>(
+                QUERY_KEYS.WISHLIST.ALL,
+                (oldWishlist = []) =>
+                    oldWishlist.filter(
+                        (item) =>
+                            item.product.id !== productId
+                    )
+            );
+
+            toast.success(
+                "Removed from wishlist"
+            );
         },
     });
 };
