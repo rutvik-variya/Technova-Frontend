@@ -13,6 +13,7 @@ import {
 import {
     QUERY_KEYS,
 } from "@/constants/query-keys";
+import { getApiError } from "@/lib/api-error";
 
 export const useMoveWishlistToCart = () => {
     const queryClient =
@@ -22,7 +23,7 @@ export const useMoveWishlistToCart = () => {
         mutationFn: (productId: string) =>
             moveWishlistToCart(productId),
 
-        onSuccess: (_, productId) => {
+        onSuccess: (response, productId) => {
             queryClient.setQueryData(
                 QUERY_KEYS.WISHLIST.ALL,
                 (oldData: unknown) => {
@@ -46,9 +47,13 @@ export const useMoveWishlistToCart = () => {
                 queryKey: QUERY_KEYS.CART.DETAIL,
             });
 
-            toast.success(
+            toast.success(response.message ||
                 "Wishlist item moved to cart"
             );
+        },
+        onError: (error: unknown) => {
+            const apiError = getApiError(error);
+            toast.error(apiError.message)
         },
     });
 };

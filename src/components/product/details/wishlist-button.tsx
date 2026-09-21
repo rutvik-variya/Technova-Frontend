@@ -36,7 +36,6 @@ export function WishlistButton({
   const isPending = addMutation.isPending || removeMutation.isPending;
 
   const handleToggle = (e: React.MouseEvent<HTMLButtonElement>) => {
-    // Prevent navigating if wrapped near links
     e.preventDefault();
     e.stopPropagation();
 
@@ -68,16 +67,11 @@ export function WishlistButton({
     }
 
     if (isWishlisted) {
-      removeMutation.mutate(product.id, {
-        onSuccess: () => toast.success("Removed from wishlist"),
-      });
+      removeMutation.mutate(product.id);
       return;
     }
 
-    addMutation.mutate(
-      { productId: product.id },
-      { onSuccess: () => toast.success("Added to wishlist") },
-    );
+    addMutation.mutate({ productId: product.id });
   };
 
   return (

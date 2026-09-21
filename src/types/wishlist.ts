@@ -12,6 +12,7 @@ export interface WishlistProduct {
     maxPrice: number | string;
     status: string;
     category: WishlistCategory | null;
+    productUrl: string | null
 }
 
 export interface WishlistItem {

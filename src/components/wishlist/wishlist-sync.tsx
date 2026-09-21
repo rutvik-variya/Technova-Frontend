@@ -49,8 +49,6 @@ export function WishlistSync() {
         queryClient.invalidateQueries({
           queryKey: QUERY_KEYS.WISHLIST.ALL,
         });
-
-        toast.success("Wishlist synchronized");
       },
       onError: () => {
         hasSynced.current = false;

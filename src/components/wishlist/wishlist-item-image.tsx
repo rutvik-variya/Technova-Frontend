@@ -10,12 +10,11 @@ interface WishlistItemImageProps {
 }
 
 export function WishlistItemImage({ product }: WishlistItemImageProps) {
-  console.log(product);
-  const imageUrl = (product as unknown as { image?: string }).image || null;
+  const imageUrl = product.productUrl ?? null;
 
   return (
     <Link href={`${ROUTES.PRODUCTS}/${product.slug}`} className="block">
-      <div className="relative aspect-square w-full overflow-hidden rounded-2xl border border-slate-100 bg-slate-50 p-4 flex items-center justify-center">
+      <div className="relative flex aspect-square w-full items-center justify-center overflow-hidden rounded-2xl border border-slate-100 bg-slate-50 p-4">
         {imageUrl ? (
           <Image
             src={imageUrl}
