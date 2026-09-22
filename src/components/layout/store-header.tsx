@@ -14,13 +14,13 @@ import { ROUTES } from "@/constants/routes";
 import { useCurrentUser } from "@/hooks/auth/use-current-user";
 import { useCart } from "@/hooks/cart/use-cart";
 import { useWishlistCount } from "../../hooks/wishlist/use-wishlist-count";
+import { useCartCount } from "@/hooks/cart/use-cart-count";
 
 export default function Header() {
   const { data } = useCurrentUser();
   const user = data?.data;
 
-  const { data: cart } = useCart();
-  const cartItemCount = cart?.totalItem ?? 0;
+  const cartCount = useCartCount();
 
   const { count: wishlistCount } = useWishlistCount();
   return (
@@ -115,7 +115,7 @@ export default function Header() {
               <span className="text-sm font-semibold">Cart</span>
 
               <span className="flex h-5 w-5 items-center justify-center rounded-full bg-blue-600 text-xs font-bold text-white">
-                {cartItemCount}
+                {cartCount}
               </span>
             </Link>
 

@@ -13,6 +13,7 @@ import type {
     Cart,
     ClearCartResponse,
     RemoveCartItemResponse,
+    SyncCartPayload,
     UpdateCartItemPayload,
     UpdateCartItemResponse,
 } from "@/types/cart";
@@ -61,6 +62,17 @@ export const removeCartItem = async (
 export const clearCart = async (): Promise<ClearCartResponse> => {
     const response = await deleteRequest<ClearCartResponse>(
         API_ENDPOINTS.CART.CLEAR
+    );
+
+    return response.data;
+};
+
+export const syncCart = async (
+    payload: SyncCartPayload,
+): Promise<Cart> => {
+    const response = await postRequest<Cart>(
+        API_ENDPOINTS.CART.SYNC,
+        payload,
     );
 
     return response.data;

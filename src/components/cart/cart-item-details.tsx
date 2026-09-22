@@ -8,6 +8,7 @@ import type { CartItem } from "@/types/cart";
 
 import { CartItemQuantity } from "./cart-item-quantity";
 import { useRemoveCartItem } from "@/hooks/cart/use-remove-cart-item";
+import { useCurrentUser } from "@/hooks/auth/use-current-user";
 
 interface CartItemDetailsProps {
   item: CartItem;
@@ -15,11 +16,21 @@ interface CartItemDetailsProps {
 
 export function CartItemDetails({ item }: CartItemDetailsProps) {
   const removeMutation = useRemoveCartItem();
+
+  const { data: currentUserResponse } = useCurrentUser();
+
+  const isAuthenticated = Boolean(currentUserResponse?.data);
+
   const { product, variant } = item;
+
   const productPrice = Number(item.priceAtAdded);
 
   const handleRemove = () => {
-    removeMutation.mutate(item.id);
+    removeMutation.mutate({
+      itemId: item.id,
+      variantId: item.variantId,
+      isAuthenticated,
+    });
   };
 
   return (
@@ -46,18 +57,19 @@ export function CartItemDetails({ item }: CartItemDetailsProps) {
           </p>
         </div>
 
-        {/* Variant Specs Badges */}
         <div className="mt-2 flex flex-wrap gap-1.5">
           {variant.ram && (
             <span className="rounded-lg border border-slate-200 bg-slate-50 px-2 py-0.5 text-[11px] font-semibold text-slate-600">
               RAM: {variant.ram}
             </span>
           )}
+
           {variant.storage && (
             <span className="rounded-lg border border-slate-200 bg-slate-50 px-2 py-0.5 text-[11px] font-semibold text-slate-600">
               Storage: {variant.storage}
             </span>
           )}
+
           {variant.color && (
             <span className="rounded-lg border border-slate-200 bg-slate-50 px-2 py-0.5 text-[11px] font-semibold text-slate-600">
               Color: {variant.color}
@@ -66,10 +78,10 @@ export function CartItemDetails({ item }: CartItemDetailsProps) {
         </div>
       </div>
 
-      {/* Footer Controls: Quantity Adjuster + Remove Button */}
       <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-slate-100 pt-3">
         <CartItemQuantity
           itemId={item.id}
+          variantId={item.variantId}
           quantity={item.quantity}
           stock={variant.stock}
         />
@@ -81,6 +93,7 @@ export function CartItemDetails({ item }: CartItemDetailsProps) {
           className="inline-flex items-center gap-1.5 rounded-xl px-2.5 py-1.5 text-xs font-bold text-slate-400 transition hover:bg-rose-50 hover:text-rose-600 disabled:cursor-not-allowed disabled:opacity-50"
         >
           <Trash2 className="h-3.5 w-3.5" />
+
           {removeMutation.isPending ? "Removing..." : "Remove"}
         </button>
       </div>

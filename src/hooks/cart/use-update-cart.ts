@@ -1,30 +1,131 @@
 "use client";
 
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+    useMutation,
+    useQueryClient,
+} from "@tanstack/react-query";
+
 import { toast } from "sonner";
 
 import { QUERY_KEYS } from "@/constants/query-keys";
-import { updateCartItem, } from "@/services/cart.service";
+import { updateCartItem } from "@/services/cart.service";
 
-import type { Cart, UpdateCartItemPayload } from "@/types/cart";
+import { useCartStore } from "@/store/cart.store";
+
+import type { Cart } from "@/types/cart";
+
 import { getApiError } from "@/lib/api-error";
 
 interface UpdateCartVariables {
     itemId: string;
-    payload: UpdateCartItemPayload;
+    variantId: string;
+    quantity: number;
+    isAuthenticated: boolean;
+}
+
+interface UpdateCartContext {
+    previousCart?: Cart;
 }
 
 export const useUpdateCart = () => {
     const queryClient = useQueryClient();
 
-    return useMutation({
-        mutationFn: ({
-            itemId,
-            payload,
-        }: UpdateCartVariables) =>
-            updateCartItem(itemId, payload),
+    const updateGuestItem = useCartStore(
+        (state) => state.updateItem,
+    );
 
-        onSuccess: (response) => {
+    return useMutation<
+        unknown,
+        unknown,
+        UpdateCartVariables,
+        UpdateCartContext
+    >({
+        mutationFn: async ({
+            itemId,
+            quantity,
+            isAuthenticated,
+        }) => {
+            if (!isAuthenticated) {
+                return null;
+            }
+
+            return updateCartItem(itemId, {
+                quantity,
+            });
+        },
+
+        onMutate: ({
+            itemId,
+            variantId,
+            quantity,
+            isAuthenticated,
+        }) => {
+
+            // guest cart
+            if (!isAuthenticated) {
+                updateGuestItem(variantId, quantity);
+
+                const guestItems =
+                    useCartStore.getState().items;
+
+                const subtotal = guestItems.reduce(
+                    (total, item) =>
+                        total +
+                        Number(item.variant.price) *
+                        item.quantity,
+                    0,
+                );
+
+                const totalItem = guestItems.reduce(
+                    (total, item) =>
+                        total + item.quantity,
+                    0,
+                );
+
+                const now =
+                    new Date().toISOString();
+
+                const guestCart: Cart = {
+                    id: null,
+                    userId: null,
+                    subtotal: String(subtotal),
+                    totalItem,
+                    couponId: null,
+                    cartItems: guestItems.map(
+                        (item, index) => ({
+                            id: `guest-${item.variantId}-${index}`,
+                            cartId: null,
+                            productId: item.productId,
+                            variantId: item.variantId,
+                            quantity: item.quantity,
+                            priceAtAdded:
+                                item.variant.price,
+                            createdAt: now,
+                            updatedAt: now,
+                            product: item.product,
+                            variant: item.variant,
+                        }),
+                    ),
+                };
+
+                queryClient.setQueryData<Cart>(
+                    QUERY_KEYS.CART.DETAIL,
+                    guestCart,
+                );
+
+                return {};
+            }
+
+            // auth cart
+            const previousCart =
+                queryClient.getQueryData<Cart>(
+                    QUERY_KEYS.CART.DETAIL,
+                );
+
+            if (!previousCart) {
+                return {};
+            }
+
             queryClient.setQueryData<Cart>(
                 QUERY_KEYS.CART.DETAIL,
                 (oldCart) => {
@@ -32,50 +133,76 @@ export const useUpdateCart = () => {
                         return oldCart;
                     }
 
-                    const updatedItems = oldCart.cartItems.map(
-                        (item) => {
-                            if (item.id !== response.itemId) {
-                                return item;
-                            }
+                    const currentItem =
+                        oldCart.cartItems.find(
+                            (item) =>
+                                item.id === itemId,
+                        );
 
-                            return {
-                                ...item,
-                                quantity: response.quantity,
-                            };
-                        }
-                    );
+                    if (!currentItem) {
+                        return oldCart;
+                    }
 
-                    const subtotal = updatedItems.reduce(
-                        (total, item) => {
-                            return (
-                                total +
-                                Number(item.priceAtAdded) *
-                                item.quantity
-                            );
-                        },
-                        0
-                    );
+                    const quantityDifference =
+                        quantity -
+                        currentItem.quantity;
 
-                    const totalItem = updatedItems.reduce(
-                        (total, item) => {
-                            return total + item.quantity;
-                        },
-                        0
-                    );
+                    const subtotalDifference =
+                        Number(
+                            currentItem.priceAtAdded,
+                        ) * quantityDifference;
 
                     return {
                         ...oldCart,
-                        cartItems: updatedItems,
-                        subtotal: String(subtotal),
-                        totalItem,
+
+                        cartItems:
+                            oldCart.cartItems.map(
+                                (item) =>
+                                    item.id === itemId
+                                        ? {
+                                            ...item,
+                                            quantity,
+                                        }
+                                        : item,
+                            ),
+
+                        totalItem:
+                            oldCart.totalItem +
+                            quantityDifference,
+
+                        subtotal: String(
+                            Number(oldCart.subtotal) +
+                            subtotalDifference,
+                        ),
                     };
-                }
+                },
             );
+
+            return {
+                previousCart,
+            };
         },
 
-        onError: (error: unknown) => {
-            const apiError = getApiError(error);
-            toast.error(apiError.message)
+        onError: (
+            error,
+            variables,
+            context,
+        ) => {
+            if (!variables.isAuthenticated) {
+                return;
+            }
+
+            if (context?.previousCart) {
+                queryClient.setQueryData<Cart>(
+                    QUERY_KEYS.CART.DETAIL,
+                    context.previousCart,
+                );
+            }
+
+            const apiError =
+                getApiError(error);
+
+            toast.error(apiError.message);
         },
     });
 };

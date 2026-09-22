@@ -28,6 +28,7 @@ export const API_ENDPOINTS = {
         UPDATE_ITEM: (itemId: string) => `/cart/item/${itemId}`,
         REMOVE_ITEM: (itemId: string) => `/cart/item/${itemId}`,
         CLEAR: "/cart",
+        SYNC: "/cart/sync",
     },
     WISHLIST: {
         ALL: "/wishlist/",

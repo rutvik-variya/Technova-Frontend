@@ -4,8 +4,8 @@ export interface CartProduct {
     slug: string;
     brand: string | null;
     status: string;
-    basePrice: string;
-    maxPrice: string;
+    basePrice: number | string;
+    maxPrice: number | string;
     image: string | null;
 }
 
@@ -16,33 +16,34 @@ export interface CartVariant {
     ram: string | null;
     storage: string | null;
     color: string | null;
-    price: string;
-    comparePrice: string | null;
+    price: number | string;
+    comparePrice: number | string | null;
     stock: number;
     isActive: boolean;
 }
 
 export interface CartItem {
     id: string;
-    cartId: string;
+    cartId: string | null;
     productId: string;
     variantId: string;
     quantity: number;
-    priceAtAdded: string;
+    priceAtAdded: number | string;
     createdAt: string;
     updatedAt: string;
+
     product: CartProduct;
     variant: CartVariant;
 }
 
 export interface Cart {
-    id: string;
-    userId: string;
-    subtotal: string;
+    id: string | null;
+    userId: string | null;
+    subtotal: number | string;
     totalItem: number;
     couponId: string | null;
-    createdAt: string;
-    updatedAt: string;
+    createdAt?: string;
+    updatedAt?: string;
     cartItems: CartItem[];
 }
 
@@ -52,12 +53,12 @@ export interface AddToCartPayload {
     quantity: number;
 }
 
-export interface AddToCartResponse {
-    cartId: string;
-}
-
 export interface UpdateCartItemPayload {
     quantity: number;
+}
+
+export interface AddToCartResponse {
+    cartId: string;
 }
 
 export interface UpdateCartItemResponse {
@@ -72,16 +73,39 @@ export interface RemoveCartItemResponse {
 }
 
 export interface ClearCartResponse {
-    id: string;
-    subtotal: number;
+    id: string | null;
+    userId: string;
+    subtotal: number | string;
     totalItem: number;
-    cartItems: CartItem[];
+    couponId: string | null;
+    cartItems: [];
 }
 
 export interface OptimisticCartItem {
     productId: string;
     variantId: string;
     quantity: number;
+
     product: CartProduct;
     variant: CartVariant;
+}
+
+
+export interface GuestCartItem {
+    productId: string;
+    variantId: string;
+    quantity: number;
+
+    product: CartProduct;
+    variant: CartVariant;
+}
+
+export interface SyncCartItemPayload {
+    productId: string;
+    variantId: string;
+    quantity: number;
+}
+
+export interface SyncCartPayload {
+    items: SyncCartItemPayload[];
 }
