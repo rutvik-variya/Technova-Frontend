@@ -46,5 +46,8 @@ export const QUERY_KEYS = {
             ["reviews", "product", productId] as const,
     },
 
-
+    CHECKOUT: {
+        DETAIL: (addressId: string) =>
+            ["checkout", "detail", addressId] as const,
+    },
 } as const;

@@ -39,4 +39,7 @@ export const API_ENDPOINTS = {
             `/wishlist/${productId}/move-to-cart`,
         SYNC: "/wishlist/sync",
     },
+    CHECKOUT: {
+        CREATE: "/checkout",
+    },
 } as const;
