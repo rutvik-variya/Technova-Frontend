@@ -2,25 +2,20 @@
 
 import { useQuery } from "@tanstack/react-query";
 
-import { getCart } from "@/services/cart.service";
+import { getAddresses } from "@/services/address.service";
 import { QUERY_KEYS } from "@/constants/query-keys";
 import { useCurrentUser } from "../auth/use-current-user";
 
-export const useCart = () => {
-    const { data: currentUser } =
-        useCurrentUser();
+export const useAddresses = () => {
+    const { data: currentUser } = useCurrentUser();
 
     const user = currentUser?.data;
 
     return useQuery({
-        queryKey: QUERY_KEYS.CART.DETAIL,
-
-        queryFn: getCart,
-
+        queryKey: QUERY_KEYS.ADDRESSES.ALL,
+        queryFn: getAddresses,
         enabled: Boolean(user),
-
-        staleTime: 0,
-
+        staleTime: 2 * 60 * 1000,
         refetchOnWindowFocus: false,
     });
 };

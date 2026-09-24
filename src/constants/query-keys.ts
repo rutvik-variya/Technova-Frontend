@@ -25,12 +25,6 @@ export const QUERY_KEYS = {
     CART: {
         DETAIL: ["cart"] as const,
     },
-    ADDRESSES: {
-        ALL: ["addresses"] as const,
-        DETAIL: (id: string) =>
-            ["addresses", "detail", id] as const,
-    },
-
     ORDERS: {
         ALL: ["orders"] as const,
         LIST: (params?: unknown) =>
@@ -46,8 +40,19 @@ export const QUERY_KEYS = {
             ["reviews", "product", productId] as const,
     },
 
+    ADDRESSES: {
+        ALL: ["addresses"] as const,
+
+        DETAIL: (id: string) =>
+            ["addresses", "detail", id] as const,
+    },
+
     CHECKOUT: {
         DETAIL: (addressId: string) =>
-            ["checkout", "detail", addressId] as const,
+            [
+                "checkout",
+                "detail",
+                addressId,
+            ] as const,
     },
 } as const;

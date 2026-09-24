@@ -42,4 +42,20 @@ export const API_ENDPOINTS = {
     CHECKOUT: {
         CREATE: "/checkout",
     },
+    ADDRESS: {
+        ALL: "/address",
+        CREATE: "/address",
+        DETAIL: (addressId: string) =>
+            `/address/${addressId}`,
+        UPDATE: (addressId: string) =>
+            `/address/${addressId}`,
+        DELETE: (addressId: string) =>
+            `/address/${addressId}`,
+        SET_DEFAULT: (addressId: string) =>
+            `/address/${addressId}/default`,
+    },
+    COUPON: {
+        APPLY: "/coupon/apply",
+        REMOVE: "/coupon/remove",
+    },
 } as const;

@@ -4,7 +4,6 @@ import { useQuery } from "@tanstack/react-query";
 
 import { getCheckout } from "@/services/checkout.service";
 import { QUERY_KEYS } from "@/constants/query-keys";
-
 import { useCurrentUser } from "../auth/use-current-user";
 
 export const useCheckout = (
@@ -18,7 +17,9 @@ export const useCheckout = (
 
     return useQuery({
         queryKey: addressId
-            ? QUERY_KEYS.CHECKOUT.DETAIL(addressId)
+            ? QUERY_KEYS.CHECKOUT.DETAIL(
+                addressId
+            )
             : ["checkout"],
 
         queryFn: () =>
@@ -31,6 +32,7 @@ export const useCheckout = (
         ),
 
         staleTime: 0,
+
         refetchOnWindowFocus: false,
     });
 };
