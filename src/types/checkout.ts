@@ -30,6 +30,7 @@ export interface CheckoutAddress {
 }
 
 export interface CheckoutTotals {
+    [x: string]: number;
     subtotal: number;
     totalItem: number;
 }

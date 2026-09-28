@@ -8,6 +8,9 @@ import { useCheckout } from "@/hooks/checkout/use-checkout";
 import { CheckoutAddressSection } from "./checkout-address-section";
 import { CheckoutOrderSummary } from "./checkout-order-summary";
 import CheckoutCoupon from "./checkout-coupon";
+import { CheckoutShippingSection } from "./checkout-shipping-section";
+
+import type { ShippingMethod } from "@/types/shipping";
 
 export default function CheckoutPage() {
   const { data: currentUser, isLoading: isUserLoading } = useCurrentUser();
@@ -15,10 +18,6 @@ export default function CheckoutPage() {
   const user = currentUser?.data;
 
   const [selectedAddressId, setSelectedAddressId] = useState<string>();
-
-  const handleAddressSelect = useCallback((addressId: string) => {
-    setSelectedAddressId(addressId);
-  }, []);
 
   const [appliedCoupon, setAppliedCoupon] = useState<{
     id: string;
@@ -28,6 +27,9 @@ export default function CheckoutPage() {
 
   const [couponDiscount, setCouponDiscount] = useState(0);
 
+  const [selectedShippingMethod, setSelectedShippingMethod] =
+    useState<ShippingMethod | null>(null);
+
   const {
     data: checkout,
     isLoading: isCheckoutLoading,
@@ -35,6 +37,22 @@ export default function CheckoutPage() {
     isError: isCheckoutError,
     refetch: refetchCheckout,
   } = useCheckout(selectedAddressId);
+
+  const handleAddressSelect = useCallback(
+    (addressId: string) => {
+      if (addressId !== selectedAddressId) {
+        setSelectedAddressId(addressId);
+        setSelectedShippingMethod(null);
+        setAppliedCoupon(null);
+        setCouponDiscount(0);
+      }
+    },
+    [selectedAddressId],
+  );
+
+  const handleShippingSelect = useCallback((method: ShippingMethod) => {
+    setSelectedShippingMethod(method);
+  }, []);
 
   const handleCouponApplied = useCallback(
     (data: {
@@ -65,7 +83,6 @@ export default function CheckoutPage() {
 
           <div className="mt-8 grid gap-6 lg:grid-cols-[1.5fr_1fr]">
             <div className="h-96 rounded-2xl bg-gray-100" />
-
             <div className="h-96 rounded-2xl bg-gray-100" />
           </div>
         </div>
@@ -107,12 +124,24 @@ export default function CheckoutPage() {
             onAddressSelect={handleAddressSelect}
           />
 
-          <CheckoutCoupon
-            appliedCoupon={appliedCoupon}
-            discount={couponDiscount}
-            onCouponApplied={handleCouponApplied}
-            onCouponRemoved={handleCouponRemoved}
-          />
+          {/* Shipping appears after checkout data is available */}
+          {checkout && (
+            <CheckoutShippingSection
+              subtotal={checkout.totals.subtotal}
+              selectedMethodId={selectedShippingMethod?.id}
+              onShippingSelect={handleShippingSelect}
+            />
+          )}
+
+          {/* Coupon appears after address selection */}
+          {checkout && (
+            <CheckoutCoupon
+              appliedCoupon={appliedCoupon}
+              discount={couponDiscount}
+              onCouponApplied={handleCouponApplied}
+              onCouponRemoved={handleCouponRemoved}
+            />
+          )}
         </div>
 
         {/* RIGHT */}
@@ -124,6 +153,7 @@ export default function CheckoutPage() {
             isError={isCheckoutError}
             onRetry={refetchCheckout}
             couponDiscount={couponDiscount}
+            selectedShippingMethod={selectedShippingMethod}
           />
         </div>
       </div>

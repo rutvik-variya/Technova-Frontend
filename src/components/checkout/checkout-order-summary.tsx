@@ -1,6 +1,7 @@
 "use client";
 
 import type { CheckoutResponse } from "@/types/checkout";
+import type { ShippingMethod } from "@/types/shipping";
 
 interface CheckoutOrderSummaryProps {
   checkout?: CheckoutResponse;
@@ -9,6 +10,7 @@ interface CheckoutOrderSummaryProps {
   isError: boolean;
   onRetry: () => void;
   couponDiscount: number;
+  selectedShippingMethod: ShippingMethod | null;
 }
 
 export function CheckoutOrderSummary({
@@ -18,6 +20,7 @@ export function CheckoutOrderSummary({
   isError,
   onRetry,
   couponDiscount,
+  selectedShippingMethod,
 }: CheckoutOrderSummaryProps) {
   if (isLoading) {
     return (
@@ -26,7 +29,6 @@ export function CheckoutOrderSummary({
           <div className="h-6 w-32 rounded bg-gray-200" />
 
           <div className="h-16 rounded bg-gray-100" />
-
           <div className="h-16 rounded bg-gray-100" />
 
           <div className="h-px bg-gray-200" />
@@ -71,6 +73,13 @@ export function CheckoutOrderSummary({
     );
   }
 
+  const shippingCharge = selectedShippingMethod?.charge ?? 0;
+
+  const total = Math.max(
+    0,
+    checkout.totals.subtotal - couponDiscount + shippingCharge,
+  );
+
   return (
     <div className="rounded-2xl border border-gray-200 bg-white p-6">
       <div className="flex items-center justify-between">
@@ -81,6 +90,7 @@ export function CheckoutOrderSummary({
         )}
       </div>
 
+      {/* Order Items */}
       <div className="mt-6 space-y-4">
         {checkout.items.map((item) => (
           <div key={item.id} className="flex justify-between gap-4">
@@ -105,6 +115,7 @@ export function CheckoutOrderSummary({
 
       <div className="my-6 h-px bg-gray-200" />
 
+      {/* Item Count */}
       <div className="flex items-center justify-between">
         <span className="text-sm text-gray-600">Items</span>
 
@@ -113,7 +124,9 @@ export function CheckoutOrderSummary({
         </span>
       </div>
 
+      {/* Price Breakdown */}
       <div className="mt-3 space-y-3">
+        {/* Subtotal */}
         <div className="flex items-center justify-between">
           <span className="text-sm text-gray-600">Subtotal</span>
 
@@ -122,6 +135,7 @@ export function CheckoutOrderSummary({
           </span>
         </div>
 
+        {/* Coupon Discount */}
         {couponDiscount > 0 && (
           <div className="flex items-center justify-between">
             <span className="text-sm text-gray-600">Coupon discount</span>
@@ -132,16 +146,27 @@ export function CheckoutOrderSummary({
           </div>
         )}
 
+        {/* Shipping */}
+        <div className="flex items-center justify-between">
+          <span className="text-sm text-gray-600">Shipping</span>
+
+          <span className="text-sm font-medium text-gray-900">
+            {!selectedShippingMethod
+              ? "Select a method"
+              : shippingCharge === 0
+                ? "Free"
+                : `₹${shippingCharge.toLocaleString("en-IN")}`}
+          </span>
+        </div>
+
         <div className="h-px bg-gray-200" />
 
+        {/* Total */}
         <div className="flex items-center justify-between">
           <span className="text-base font-semibold text-gray-900">Total</span>
 
           <span className="text-lg font-semibold text-gray-900">
-            ₹
-            {(checkout.totals.subtotal - couponDiscount).toLocaleString(
-              "en-IN",
-            )}
+            ₹{total.toLocaleString("en-IN")}
           </span>
         </div>
       </div>

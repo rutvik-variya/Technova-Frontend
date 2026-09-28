@@ -5,6 +5,7 @@ import { Loader2, Tag, X } from "lucide-react";
 
 import { useApplyCoupon } from "@/hooks/coupon/use-apply-coupon";
 import { useRemoveCoupon } from "@/hooks/coupon/use-remove-coupon";
+import { CheckoutResponse } from "@/types/checkout";
 
 interface AppliedCoupon {
   id: string;

@@ -83,7 +83,6 @@ export function ProductCard({ product }: ProductCardProps) {
           status: product.status ?? "",
           basePrice: String(product.basePrice ?? 0),
           maxPrice: String(product.maxPrice ?? 0),
-
           image: primaryImage,
         },
 
@@ -124,7 +123,7 @@ export function ProductCard({ product }: ProductCardProps) {
 
         <Link
           href={`/products/${product.slug}`}
-          className="flex h-full w-full items-center justify-center p-6"
+          className="relative flex h-full w-full items-center justify-center p-6"
         >
           {primaryImage ? (
             <Image

@@ -58,4 +58,7 @@ export const API_ENDPOINTS = {
         APPLY: "/coupon/apply",
         REMOVE: "/coupon/remove",
     },
+    SHIPPING: {
+        METHODS: "/shipping/method",
+    },
 } as const;

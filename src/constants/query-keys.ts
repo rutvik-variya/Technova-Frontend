@@ -55,4 +55,8 @@ export const QUERY_KEYS = {
                 addressId,
             ] as const,
     },
+    SHIPPING: {
+        METHODS: (subtotal: number) =>
+            ["shipping", "methods", subtotal] as const,
+    },
 } as const;
