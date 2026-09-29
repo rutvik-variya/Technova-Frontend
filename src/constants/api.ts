@@ -61,4 +61,10 @@ export const API_ENDPOINTS = {
     SHIPPING: {
         METHODS: "/shipping/method",
     },
+    ORDER: {
+        CREATE: "/order",
+    },
+    PAYMENT: {
+        CREATE: "/payment",
+    },
 } as const;

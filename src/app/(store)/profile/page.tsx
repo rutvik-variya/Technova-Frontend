@@ -22,7 +22,7 @@ function ProfileContent() {
     const { data, isLoading } = useCurrentUser();
     const user = data?.data;
 
-    const getInitials = (name) => {
+    const getInitials = (name: string | undefined) => {
         if (!name) return "TN";
         return name
             .split(" ")
