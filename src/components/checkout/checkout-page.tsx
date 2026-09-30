@@ -12,11 +12,16 @@ import { CheckoutShippingSection } from "./checkout-shipping-section";
 import type { ShippingMethod } from "@/types/shipping";
 
 import { CheckoutPaymentSection } from "./checkout-payment-section";
-import type { PaymentMethodType } from "@/types/payment";
+import type {
+  CreateOnlinePaymentResponse,
+  PaymentMethodType,
+} from "@/types/payment";
+
 import { useRouter } from "next/navigation";
 import { useCreateOrder } from "@/hooks/order/useCreateOrder";
 import { useCreatePayment } from "@/hooks/payment/useCreatePayment";
-import { toast } from "sonner";
+import { useCreateOnlinePayment } from "@/hooks/payment/use-create-online-payment";
+import { useVerifyPayment } from "@/hooks/payment/use-verify-payment";
 
 export default function CheckoutPage() {
   const { data: currentUser, isLoading: isUserLoading } = useCurrentUser();
@@ -27,7 +32,8 @@ export default function CheckoutPage() {
   const createOrder = useCreateOrder();
   const createPayment = useCreatePayment();
 
-  const isPlacingOrder = createOrder.isPending || createPayment.isPending;
+  const createOnlinePaymentMutation = useCreateOnlinePayment();
+  const verifyPaymentMutation = useVerifyPayment();
 
   const [selectedAddressId, setSelectedAddressId] = useState<string>();
   const [appliedCoupon, setAppliedCoupon] = useState<{
@@ -89,7 +95,56 @@ export default function CheckoutPage() {
     setCouponDiscount(0);
   }, []);
 
-  const handlePlaceOrder = () => {
+  const openRazorpay = (payment: CreateOnlinePaymentResponse) => {
+    if (typeof window === "undefined" || !window.Razorpay) {
+      throw new Error("Razorpay SDK is not loaded");
+    }
+
+    const options: RazorpayOptions = {
+      key: payment.keyId,
+      amount: Math.round(payment.amount * 100),
+      currency: payment.currency,
+      name: "TechNova",
+      description: "TechNova Order",
+      order_id: payment.gatewayOrderId,
+
+      handler: async (response) => {
+        try {
+          await verifyPaymentMutation.mutateAsync({
+            paymentId: payment.paymentId,
+
+            data: {
+              razorpayPaymentId: response.razorpay_payment_id,
+
+              razorpayOrderId: response.razorpay_order_id,
+
+              razorpaySignature: response.razorpay_signature,
+            },
+          });
+
+          router.push(`/checkout/success?orderId=${payment.orderId}`);
+        } catch (error) {
+          console.error("Payment verification failed:", error);
+        }
+      },
+
+      modal: {
+        ondismiss: () => {
+          console.log("Razorpay checkout closed");
+        },
+      },
+
+      theme: {
+        color: "#000000",
+      },
+    };
+
+    const razorpay = new window.Razorpay(options);
+
+    razorpay.open();
+  };
+
+  const handlePlaceOrder = async () => {
     if (
       !selectedAddressId ||
       !selectedShippingMethod ||
@@ -98,37 +153,39 @@ export default function CheckoutPage() {
       return;
     }
 
-    createOrder.mutate(
-      {
+    try {
+      const order = await createOrder.mutateAsync({
         addressId: selectedAddressId,
         paymentMethod: selectedPaymentMethod,
         shippingMethod: selectedShippingMethod.method,
-      },
-      {
-        onSuccess: (order) => {
-          // COD: Create payment after the order is created.
-          if (selectedPaymentMethod === "COD") {
-            createPayment.mutate(
-              {
-                orderId: order.id,
-                paymentMethod: "COD",
-              },
-              {
-                onSuccess: () => {
-                  router.push(`/checkout/success?orderId=${order.id}`);
-                },
-              },
-            );
+      });
 
-            return;
-          }
+      if (selectedPaymentMethod === "COD") {
+        await createPayment.mutateAsync({
+          orderId: order.id,
+          paymentMethod: "COD",
+        });
 
-          // Online payment will be integrated in Step 9.
-          router.push(`/checkout/success?orderId=${order.id}`);
-        },
-      },
-    );
+        router.push(`/checkout/success?orderId=${order.id}`);
+
+        return;
+      }
+
+      const onlinePayment = await createOnlinePaymentMutation.mutateAsync({
+        orderId: order.id,
+      });
+
+      openRazorpay(onlinePayment);
+    } catch (error) {
+      console.error("Place order failed:", error);
+    }
   };
+
+  const isPaymentProcessing =
+    createOrder.isPending ||
+    createPayment.isPending ||
+    createOnlinePaymentMutation.isPending ||
+    verifyPaymentMutation.isPending;
 
   if (isUserLoading) {
     return (
@@ -218,20 +275,10 @@ export default function CheckoutPage() {
 
           <button
             type="button"
+            disabled={isPaymentProcessing}
             onClick={handlePlaceOrder}
-            disabled={
-              isPlacingOrder ||
-              !selectedAddressId ||
-              !selectedShippingMethod ||
-              !selectedPaymentMethod
-            }
-            className="w-full rounded-lg bg-black px-6 py-3 text-white disabled:cursor-not-allowed disabled:opacity-50"
           >
-            {createOrder.isPending
-              ? "Placing Order..."
-              : createPayment.isPending
-                ? "Creating COD Payment..."
-                : "Place Order"}
+            {isPaymentProcessing ? "Processing..." : "Place Order"}
           </button>
 
           {(createOrder.isError || createPayment.isError) && (

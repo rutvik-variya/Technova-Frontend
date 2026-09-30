@@ -66,5 +66,6 @@ export const API_ENDPOINTS = {
     },
     PAYMENT: {
         CREATE: "/payment",
+        CREATE_ONLINE: "/payment/online",
     },
 } as const;

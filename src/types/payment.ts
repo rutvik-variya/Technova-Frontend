@@ -21,3 +21,33 @@ export interface CreatedPayment {
     status: PaymentStatusType;
     createdAt: string;
 }
+
+export interface CreateOnlinePaymentRequest {
+    orderId: string;
+}
+
+export interface CreateOnlinePaymentResponse {
+    paymentId: string;
+    orderId: string;
+    gatewayOrderId: string;
+    amount: number;
+    currency: string;
+    keyId: string;
+}
+
+export interface VerifyPaymentRequest {
+    razorpayPaymentId: string;
+    razorpayOrderId: string;
+    razorpaySignature: string;
+}
+
+export interface VerifyPaymentResponse {
+    id: string;
+    orderId: string;
+    amount: string;
+    method: string;
+    status: string;
+    transactionId: string | null;
+    paidAt: string | null;
+    createdAt: string;
+}
