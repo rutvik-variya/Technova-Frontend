@@ -3,8 +3,10 @@
 import type { PaymentMethodType } from "@/types/payment";
 
 interface CheckoutPaymentSectionProps {
-  selectedMethod: PaymentMethodType | null;
-  onPaymentSelect: (method: PaymentMethodType) => void;
+  selectedPaymentMethod: PaymentMethodType | null;
+  onPaymentMethodChange: (method: PaymentMethodType) => void;
+  onPlaceOrder: () => void;
+  isProcessing: boolean;
 }
 
 const PAYMENT_METHODS: {
@@ -26,8 +28,8 @@ const PAYMENT_METHODS: {
 ];
 
 export function CheckoutPaymentSection({
-  selectedMethod,
-  onPaymentSelect,
+  selectedPaymentMethod,
+  onPaymentMethodChange,
 }: CheckoutPaymentSectionProps) {
   return (
     <section className="rounded-2xl border border-gray-200 bg-white">
@@ -37,7 +39,7 @@ export function CheckoutPaymentSection({
 
       <div className="space-y-3 p-5 sm:p-6">
         {PAYMENT_METHODS.map((method) => {
-          const isSelected = selectedMethod === method.value;
+          const isSelected = selectedPaymentMethod === method.value;
 
           return (
             <label
@@ -53,7 +55,7 @@ export function CheckoutPaymentSection({
                 name="paymentMethod"
                 value={method.value}
                 checked={isSelected}
-                onChange={() => onPaymentSelect(method.value)}
+                onChange={() => onPaymentMethodChange(method.value)}
                 className="mt-1 h-4 w-4 accent-indigo-600"
               />
 

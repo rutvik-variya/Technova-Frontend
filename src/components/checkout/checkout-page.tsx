@@ -12,28 +12,13 @@ import { CheckoutShippingSection } from "./checkout-shipping-section";
 import type { ShippingMethod } from "@/types/shipping";
 
 import { CheckoutPaymentSection } from "./checkout-payment-section";
-import type {
-  CreateOnlinePaymentResponse,
-  PaymentMethodType,
-} from "@/types/payment";
-
-import { useRouter } from "next/navigation";
-import { useCreateOrder } from "@/hooks/order/useCreateOrder";
-import { useCreatePayment } from "@/hooks/payment/useCreatePayment";
-import { useCreateOnlinePayment } from "@/hooks/payment/use-create-online-payment";
-import { useVerifyPayment } from "@/hooks/payment/use-verify-payment";
+import type { PaymentMethodType } from "@/types/payment";
+import { useCheckoutPayment } from "@/hooks/checkout/use-checkout-payment";
+import { CheckoutPlaceOrderButton } from "./checkout-place-order-button";
 
 export default function CheckoutPage() {
   const { data: currentUser, isLoading: isUserLoading } = useCurrentUser();
   const user = currentUser?.data;
-
-  const router = useRouter();
-
-  const createOrder = useCreateOrder();
-  const createPayment = useCreatePayment();
-
-  const createOnlinePaymentMutation = useCreateOnlinePayment();
-  const verifyPaymentMutation = useVerifyPayment();
 
   const [selectedAddressId, setSelectedAddressId] = useState<string>();
   const [appliedCoupon, setAppliedCoupon] = useState<{
@@ -49,6 +34,19 @@ export default function CheckoutPage() {
 
   const [selectedPaymentMethod, setSelectedPaymentMethod] =
     useState<PaymentMethodType | null>(null);
+
+  const {
+    placeOrder,
+    isProcessing: isPaymentProcessing,
+    createOrder,
+    createPayment,
+    createOnlinePaymentMutation,
+    verifyPaymentMutation,
+  } = useCheckoutPayment({
+    addressId: selectedAddressId,
+    shippingMethod: selectedShippingMethod,
+    paymentMethod: selectedPaymentMethod,
+  });
 
   const {
     data: checkout,
@@ -95,97 +93,13 @@ export default function CheckoutPage() {
     setCouponDiscount(0);
   }, []);
 
-  const openRazorpay = (payment: CreateOnlinePaymentResponse) => {
-    if (typeof window === "undefined" || !window.Razorpay) {
-      throw new Error("Razorpay SDK is not loaded");
+  const getPaymentErrorMessage = (error: unknown) => {
+    if (error instanceof Error && error.message) {
+      return error.message;
     }
 
-    const options: RazorpayOptions = {
-      key: payment.keyId,
-      amount: Math.round(payment.amount * 100),
-      currency: payment.currency,
-      name: "TechNova",
-      description: "TechNova Order",
-      order_id: payment.gatewayOrderId,
-
-      handler: async (response) => {
-        try {
-          await verifyPaymentMutation.mutateAsync({
-            paymentId: payment.paymentId,
-
-            data: {
-              razorpayPaymentId: response.razorpay_payment_id,
-
-              razorpayOrderId: response.razorpay_order_id,
-
-              razorpaySignature: response.razorpay_signature,
-            },
-          });
-
-          router.push(`/checkout/success?orderId=${payment.orderId}`);
-        } catch (error) {
-          console.error("Payment verification failed:", error);
-        }
-      },
-
-      modal: {
-        ondismiss: () => {
-          console.log("Razorpay checkout closed");
-        },
-      },
-
-      theme: {
-        color: "#000000",
-      },
-    };
-
-    const razorpay = new window.Razorpay(options);
-
-    razorpay.open();
+    return "Payment could not be completed. Please try again.";
   };
-
-  const handlePlaceOrder = async () => {
-    if (
-      !selectedAddressId ||
-      !selectedShippingMethod ||
-      !selectedPaymentMethod
-    ) {
-      return;
-    }
-
-    try {
-      const order = await createOrder.mutateAsync({
-        addressId: selectedAddressId,
-        paymentMethod: selectedPaymentMethod,
-        shippingMethod: selectedShippingMethod.method,
-      });
-
-      if (selectedPaymentMethod === "COD") {
-        await createPayment.mutateAsync({
-          orderId: order.id,
-          paymentMethod: "COD",
-        });
-
-        router.push(`/checkout/success?orderId=${order.id}`);
-
-        return;
-      }
-
-      const onlinePayment = await createOnlinePaymentMutation.mutateAsync({
-        orderId: order.id,
-      });
-
-      openRazorpay(onlinePayment);
-    } catch (error) {
-      console.error("Place order failed:", error);
-    }
-  };
-
-  const isPaymentProcessing =
-    createOrder.isPending ||
-    createPayment.isPending ||
-    createOnlinePaymentMutation.isPending ||
-    verifyPaymentMutation.isPending;
 
   if (isUserLoading) {
     return (
@@ -246,8 +160,10 @@ export default function CheckoutPage() {
 
           {checkout && (
             <CheckoutPaymentSection
-              selectedMethod={selectedPaymentMethod}
-              onPaymentSelect={setSelectedPaymentMethod}
+              selectedPaymentMethod={selectedPaymentMethod}
+              onPaymentMethodChange={setSelectedPaymentMethod}
+              onPlaceOrder={placeOrder}
+              isProcessing={isPaymentProcessing}
             />
           )}
 
@@ -273,26 +189,35 @@ export default function CheckoutPage() {
             selectedShippingMethod={selectedShippingMethod}
           />
 
-          <button
-            type="button"
-            disabled={isPaymentProcessing}
-            onClick={handlePlaceOrder}
-          >
-            {isPaymentProcessing ? "Processing..." : "Place Order"}
-          </button>
+          <CheckoutPlaceOrderButton
+            onPlaceOrder={placeOrder}
+            isProcessing={isPaymentProcessing}
+            disabled={
+              !selectedAddressId ||
+              !selectedShippingMethod ||
+              !selectedPaymentMethod
+            }
+          />
 
-          {(createOrder.isError || createPayment.isError) && (
-            <p className="text-sm text-red-600" role="alert">
-              {createPayment.isError
-                ? `Order was created, but payment creation failed: ${
-                    createPayment.error instanceof Error
-                      ? createPayment.error.message
-                      : "Please contact support."
-                  }`
-                : createOrder.error instanceof Error
-                  ? createOrder.error.message
-                  : "Unable to place your order. Please try again."}
-            </p>
+          {(createOrder.isError ||
+            createPayment.isError ||
+            createOnlinePaymentMutation.isError ||
+            verifyPaymentMutation.isError) && (
+            <div className="rounded-md border border-red-200 bg-red-50 p-4">
+              <p className="text-sm text-red-600">
+                {createOrder.error
+                  ? getPaymentErrorMessage(createOrder.error)
+                  : createPayment.error
+                    ? getPaymentErrorMessage(createPayment.error)
+                    : createOnlinePaymentMutation.error
+                      ? getPaymentErrorMessage(
+                          createOnlinePaymentMutation.error,
+                        )
+                      : verifyPaymentMutation.error
+                        ? getPaymentErrorMessage(verifyPaymentMutation.error)
+                        : "Payment could not be completed. Please try again."}
+              </p>
+            </div>
           )}
         </div>
       </div>
