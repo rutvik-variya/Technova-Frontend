@@ -2,34 +2,27 @@
 
 import { useQuery } from "@tanstack/react-query";
 
+import { useCurrentUser } from "@/hooks/auth/use-current-user";
 import { getCheckout } from "@/services/checkout.service";
+import type { CheckoutResponse } from "@/types/checkout";
 import { QUERY_KEYS } from "@/constants/query-keys";
-import { useCurrentUser } from "../auth/use-current-user";
 
 export const useCheckout = (
-    addressId?: string
+    addressId?: string,
+    enabled = true,
 ) => {
-    const {
-        data: currentUser,
-    } = useCurrentUser();
+    const { data: currentUser } = useCurrentUser();
 
     const user = currentUser?.data;
 
-    return useQuery({
+    return useQuery<CheckoutResponse>({
         queryKey: addressId
-            ? QUERY_KEYS.CHECKOUT.DETAIL(
-                addressId
-            )
+            ? QUERY_KEYS.CHECKOUT.DETAIL(addressId)
             : ["checkout"],
 
-        queryFn: () =>
-            getCheckout({
-                addressId: addressId!,
-            }),
+        queryFn: () => getCheckout({ addressId: addressId! }),
 
-        enabled: Boolean(
-            user && addressId
-        ),
+        enabled: Boolean(user && addressId && enabled),
 
         staleTime: 0,
 

@@ -12,10 +12,9 @@ export const useCreateOrder = () => {
             createOrderService(payload),
 
         onSuccess: async () => {
-            await Promise.all([
-                queryClient.invalidateQueries({ queryKey: ["cart"] }),
-                queryClient.invalidateQueries({ queryKey: ["checkout"] }),
-            ]);
+            await queryClient.invalidateQueries({
+                queryKey: ["cart"],
+            });
         },
     });
 };

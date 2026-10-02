@@ -50,16 +50,7 @@ export function CartSync() {
           })),
         });
 
-        /*
-         * Server cart becomes the
-         * source of truth.
-         */
         queryClient.setQueryData(QUERY_KEYS.CART.DETAIL, cart);
-
-        /*
-         * Only clear guest cart after
-         * successful server sync.
-         */
         clearCart();
       } catch {
         toast.error("Unable to sync your cart. Please try again.");

@@ -63,6 +63,9 @@ export const API_ENDPOINTS = {
     },
     ORDER: {
         CREATE: "/order",
+        LIST: "/order",
+        DETAIL: (orderId: string) => `/order/${orderId}`,
+        CANCEL: (orderId: string) => `/order/${orderId}/cancel`,
     },
     PAYMENT: {
         CREATE: "/payment",

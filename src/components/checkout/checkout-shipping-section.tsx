@@ -1,5 +1,6 @@
 "use client";
 
+import { Truck, AlertCircle, RefreshCw } from "lucide-react";
 import { useShippingMethods } from "@/hooks/shipping/use-shipping-methods";
 import type { ShippingMethod } from "@/types/shipping";
 
@@ -22,80 +23,91 @@ export function CheckoutShippingSection({
   } = useShippingMethods(subtotal);
 
   return (
-    <section className="rounded-xl border border-gray-200 bg-white p-5">
-      <h2 className="text-lg font-semibold">Shipping Method</h2>
-
-      <p className="mt-1 text-sm text-gray-500">
-        Choose your preferred delivery option.
-      </p>
+    <section className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-xs transition-all sm:p-6 md:p-7">
+      <div className="flex items-start gap-3">
+        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-slate-100 text-xs font-bold tracking-wider text-slate-700">
+          02
+        </span>
+        <div>
+          <h2 className="text-lg font-bold tracking-tight text-slate-900 sm:text-xl">
+            Shipping Method
+          </h2>
+          <p className="mt-0.5 text-xs text-slate-500 sm:text-sm">
+            Choose your preferred delivery velocity and carrier options.
+          </p>
+        </div>
+      </div>
 
       {isLoading && (
-        <div className="mt-5 space-y-3">
+        <div className="mt-6 space-y-3">
           {[1, 2].map((item) => (
             <div
               key={item}
-              className="h-24 animate-pulse rounded-lg bg-gray-100"
+              className="h-20 animate-pulse rounded-2xl bg-slate-100"
             />
           ))}
         </div>
       )}
 
       {isError && (
-        <div className="mt-4">
-          <p className="text-sm text-red-600">
-            Unable to load shipping methods.
-          </p>
-
+        <div className="mt-6 flex flex-col items-start gap-3 rounded-2xl border border-red-200/80 bg-red-50/50 p-5 text-red-900">
+          <div className="flex items-center gap-2">
+            <AlertCircle className="h-4 w-4 shrink-0 text-red-600" />
+            <p className="text-sm font-medium">Unable to load shipping methods.</p>
+          </div>
           <button
             type="button"
             onClick={() => refetch()}
-            className="mt-3 rounded-lg border px-4 py-2 text-sm"
+            className="inline-flex items-center gap-1.5 text-xs font-semibold text-red-700 hover:underline"
           >
+            <RefreshCw className="h-3.5 w-3.5" />
             Retry
           </button>
         </div>
       )}
 
       {!isLoading && !isError && methods?.length === 0 && (
-        <p className="mt-4 text-sm text-gray-500">
-          No shipping methods are available.
+        <p className="mt-6 rounded-xl border border-dashed border-slate-200 p-4 text-center text-xs font-medium text-slate-500 sm:text-sm">
+          No shipping methods are currently available for this area.
         </p>
       )}
 
       {!isLoading && !isError && methods && methods.length > 0 && (
-        <div className="mt-5 space-y-3">
+        <div className="mt-6 space-y-3">
           {methods.map((method) => {
             const selected = selectedMethodId === method.id;
 
             return (
               <label
                 key={method.id}
-                className={`flex cursor-pointer items-center justify-between gap-4 rounded-lg border p-4 transition ${
+                className={`flex cursor-pointer items-center justify-between gap-4 rounded-2xl border p-4 transition-all duration-200 ${
                   selected
-                    ? "border-black bg-gray-50"
-                    : "border-gray-200 hover:border-gray-400"
+                    ? "border-slate-900 bg-slate-900/[0.02] ring-1 ring-slate-900 shadow-xs"
+                    : "border-slate-200/80 bg-white hover:border-slate-300 hover:shadow-xs"
                 }`}
               >
-                <div className="flex items-start gap-3">
+                <div className="flex items-center gap-3.5">
                   <input
                     type="radio"
                     name="shipping-method"
                     value={method.id}
                     checked={selected}
                     onChange={() => onShippingSelect(method)}
-                    className="mt-1 h-4 w-4 accent-black"
+                    className="h-4 w-4 accent-slate-900 focus:ring-slate-900"
                   />
 
                   <div>
-                    <p className="text-sm font-semibold">{method.name}</p>
-
-                    <p className="mt-1 text-sm text-gray-500">
-                      Estimated delivery: {method.estimatedDays} days
+                    <p className="text-sm font-bold text-slate-900 sm:text-base">
+                      {method.name}
                     </p>
+                    <div className="mt-0.5 flex items-center gap-1 text-xs text-slate-500">
+                      <Truck className="h-3.5 w-3.5 text-slate-400" />
+                      <span>Estimated delivery: {method.estimatedDays} days</span>
+                    </div>
                   </div>
                 </div>
 
-                <span className="shrink-0 text-sm font-semibold">
+                <span className="shrink-0 rounded-xl bg-slate-100 px-3 py-1 text-xs font-bold text-slate-900 sm:text-sm">
                   {method.charge === 0
                     ? "Free"
                     : `₹${method.charge.toLocaleString("en-IN")}`}
