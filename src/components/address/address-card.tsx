@@ -26,7 +26,7 @@ export function AddressCard({
       className={[
         "group relative rounded-2xl border p-4 sm:p-5 transition-all duration-200 cursor-pointer",
         selected
-          ? "border-slate-900 bg-slate-900/[0.02] ring-1 ring-slate-900 shadow-xs"
+          ? "border-slate-900 bg-slate-900/2 ring-1 ring-slate-900 shadow-xs"
           : "border-slate-200/80 bg-white hover:border-slate-300 hover:shadow-xs",
       ].join(" ")}
     >
@@ -46,7 +46,7 @@ export function AddressCard({
             ].join(" ")}
             aria-label={`Select ${address.fullName}'s address`}
           >
-            {selected && <Check className="h-3 w-3 stroke-[3]" />}
+            {selected && <Check className="h-3 w-3 stroke-3" />}
           </button>
         )}
 

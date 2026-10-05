@@ -60,7 +60,7 @@ export function CheckoutPaymentSection({
               key={method.value}
               className={`flex cursor-pointer flex-col rounded-2xl border p-4.5 transition-all duration-200 sm:p-5 ${
                 isSelected
-                  ? "border-slate-900 bg-slate-900/[0.02] ring-1 ring-slate-900 shadow-xs"
+                  ? "border-slate-900 bg-slate-900/2 ring-1 ring-slate-900 shadow-xs"
                   : "border-slate-200/80 bg-white hover:border-slate-300 hover:shadow-xs"
               }`}
             >

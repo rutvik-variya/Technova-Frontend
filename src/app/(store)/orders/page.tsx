@@ -1,13 +1,10 @@
-export default function OrdersPage() {
-    return (
-        <section className="mx-auto max-w-7xl px-4 py-12 lg:px-8">
-            <h1 className="text-3xl font-bold">
-                My Orders
-            </h1>
+import ProtectedRoute from "@/components/auth/protected-route";
+import OrdersPage from "@/components/orders/orders-page";
 
-            <p className="mt-3 text-gray-600">
-                Orders will be implemented later.
-            </p>
-        </section>
-    );
+export default function Orders() {
+  return (
+    <ProtectedRoute>
+      <OrdersPage />
+    </ProtectedRoute>
+  );
 }
