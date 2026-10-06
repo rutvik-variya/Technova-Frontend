@@ -6,7 +6,7 @@ import { ShieldCheck, CreditCard, AlertCircle, Lock } from "lucide-react";
 import { useCurrentUser } from "@/hooks/auth/use-current-user";
 import { useCheckout } from "@/hooks/checkout/use-checkout";
 
-import { CheckoutAddressSection } from "./checkout-address-section";
+import CheckoutAddressSection from "./checkout-address-section";
 import { CheckoutOrderSummary } from "./checkout-order-summary";
 import CheckoutCoupon from "./checkout-coupon";
 import { CheckoutShippingSection } from "./checkout-shipping-section";

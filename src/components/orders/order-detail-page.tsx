@@ -6,9 +6,6 @@ import {
   Calendar,
   CreditCard,
   Package,
-  ShieldCheck,
-  Truck,
-  CheckCircle2,
   Clock,
   XCircle,
 } from "lucide-react";

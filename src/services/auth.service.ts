@@ -1,6 +1,6 @@
 import { API_ENDPOINTS } from "@/constants/api";
-import { getRequest, postRequest } from "@/lib/api-request";
-import { AuthResponse, LoginInput, RegisterInput, User } from "@/types/auth";
+import { getRequest, patchRequest, postRequest } from "@/lib/api-request";
+import { AuthResponse, ChangePasswordPayload, LoginInput, RegisterInput, User } from "@/types/auth";
 
 
 export const registerUser = async (
@@ -27,3 +27,17 @@ export const getCurrentUser = async () => {
     );
 };
 
+
+export const changePassword = async (
+    payload: ChangePasswordPayload
+): Promise<null> => {
+    const response = await patchRequest<
+        null,
+        ChangePasswordPayload
+    >(
+        API_ENDPOINTS.AUTH.CHANGE_PASSWORD,
+        payload
+    );
+
+    return response.data;
+};

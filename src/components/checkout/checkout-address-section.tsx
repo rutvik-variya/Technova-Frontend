@@ -17,7 +17,7 @@ interface CheckoutAddressSectionProps {
   onAddressSelect: (addressId: string) => void;
 }
 
-export function CheckoutAddressSection({
+export default function CheckoutAddressSection({
   selectedAddressId,
   onAddressSelect,
 }: CheckoutAddressSectionProps) {
@@ -205,7 +205,7 @@ export function CheckoutAddressSection({
   );
 }
 
-export function AddressListSkeleton() {
+function AddressListSkeleton() {
   return (
     <div className="space-y-3">
       {[1, 2].map((item) => (

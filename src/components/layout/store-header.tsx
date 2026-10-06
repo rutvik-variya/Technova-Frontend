@@ -12,7 +12,6 @@ import {
 import Container from "./container";
 import { ROUTES } from "@/constants/routes";
 import { useCurrentUser } from "@/hooks/auth/use-current-user";
-import { useCart } from "@/hooks/cart/use-cart";
 import { useWishlistCount } from "../../hooks/wishlist/use-wishlist-count";
 import { useCartCount } from "@/hooks/cart/use-cart-count";
 
