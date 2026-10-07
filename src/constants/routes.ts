@@ -9,6 +9,5 @@ export const ROUTES = {
     ORDERS: "/orders",
     PROFILE: "/profile",
     CHANGE_PASSWORD: "/profile/change-password",
-    CONTACT: "/contact",
     POPULAR: "/popular",
 } as const;

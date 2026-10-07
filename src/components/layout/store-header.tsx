@@ -75,13 +75,6 @@ export default function Header() {
             </Link>
 
             <Link
-              href={ROUTES.CONTACT}
-              className="font-medium text-slate-600 transition hover:text-blue-600"
-            >
-              Contact
-            </Link>
-
-            <Link
               href={ROUTES.ORDERS}
               className="font-medium text-slate-600 transition hover:text-blue-600"
             >
