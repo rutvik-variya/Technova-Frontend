@@ -72,4 +72,8 @@ export const API_ENDPOINTS = {
         CREATE: "/payment",
         CREATE_ONLINE: "/payment/online",
     },
+    ADMIN: {
+        DASHBOARD: "/admin/dashboard",
+        DASHBOARD_SALES: "/admin/dashboard/sales",
+    },
 } as const;

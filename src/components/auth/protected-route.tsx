@@ -1,32 +1,56 @@
 "use client";
 
-import { useCurrentUser } from "@/hooks/auth/use-current-user";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 
+import { useCurrentUser } from "@/hooks/auth/use-current-user";
+
 interface ProtectedRouteProps {
   children: React.ReactNode;
+  requiredRole?: "USER" | "ADMIN";
 }
 
-export default function ProtectedRoute({ children }: ProtectedRouteProps) {
+export default function ProtectedRoute({
+  children,
+  requiredRole,
+}: ProtectedRouteProps) {
   const { data, isLoading, isError } = useCurrentUser();
   const router = useRouter();
 
+  const user = data?.data;
+
   useEffect(() => {
-    if (!isLoading && (isError || !data?.data)) {
-      router.replace("/login");
+    if (isLoading) {
+      return;
     }
-  }, [isLoading, isError, data, router]);
+
+    // Not authenticated
+    if (isError || !user) {
+      router.replace("/login");
+      return;
+    }
+
+    // Authenticated but does not have required role
+    if (requiredRole && user.role !== requiredRole) {
+      router.replace("/");
+    }
+  }, [isLoading, isError, user, requiredRole, router]);
 
   if (isLoading) {
     return (
       <div className="flex min-h-screen items-center justify-center">
-        <p>Checking authentication...</p>
+        <p className="text-sm text-gray-500">Checking authentication...</p>
       </div>
     );
   }
 
-  if (isError || !data?.data) {
+  // Don't render protected content when authentication failed
+  if (isError || !user) {
+    return null;
+  }
+
+  // Don't render content when role is not allowed
+  if (requiredRole && user.role !== requiredRole) {
     return null;
   }
 

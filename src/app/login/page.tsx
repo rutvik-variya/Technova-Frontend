@@ -11,6 +11,9 @@ import { loginSchema, type LoginFormValues } from "@/validations/auth.schema";
 import { useLogin } from "@/hooks/auth/use-login";
 import Button from "@/components/ui/button";
 import { ROUTES } from "@/constants/routes";
+import { queryClient } from "@/lib/query-client";
+import { QUERY_KEYS } from "@/constants/query-keys";
+import { getCurrentUser } from "@/services/auth.service";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -32,7 +35,18 @@ export default function LoginPage() {
   const onSubmit = async (data: LoginFormValues) => {
     try {
       await loginMutation.mutateAsync(data);
-      router.push("/");
+
+      const currentUser = await queryClient.fetchQuery({
+        queryKey: QUERY_KEYS.AUTH.ME,
+        queryFn: getCurrentUser,
+      });
+
+      if (currentUser.data.role === "ADMIN") {
+        router.replace("/admin");
+        return;
+      }
+
+      router.replace("/");
     } catch (error) {
       console.error("Login failed:", error);
     }

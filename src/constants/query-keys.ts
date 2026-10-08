@@ -59,4 +59,8 @@ export const QUERY_KEYS = {
         METHODS: (subtotal: number) =>
             ["shipping", "methods", subtotal] as const,
     },
+    ADMIN: {
+        DASHBOARD: ["admin", "dashboard"] as const,
+        DASHBOARD_SALES: ["admin", "dashboard", "sales"] as const,
+    },
 } as const;
