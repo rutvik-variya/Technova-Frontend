@@ -63,4 +63,10 @@ export const QUERY_KEYS = {
         DASHBOARD: ["admin", "dashboard"] as const,
         DASHBOARD_SALES: ["admin", "dashboard", "sales"] as const,
     },
+    ADMIN_PRODUCTS: {
+        ALL: ["admin", "products"] as const,
+        LIST: ["admin", "products", "list"] as const,
+        DETAIL: (id: string) =>
+            ["admin", "products", "detail", id] as const,
+    },
 } as const;

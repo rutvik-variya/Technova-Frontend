@@ -16,6 +16,22 @@ export const API_ENDPOINTS = {
         DETAIL: (slug: string) => `/products/${slug}`,
         BRAND: "/products/brands",
         RELATED: (slug: string) => `/products/${slug}/related`,
+        CREATE: "/products",
+        UPDATE: (id: string) => `/products/${id}`,
+        DELETE: (id: string) => `/products/${id}`,
+
+        UPLOAD_IMAGES: (id: string) => `/products/${id}/images`,
+        SET_PRIMARY_IMAGE: (imageId: string) =>
+            `/products/${imageId}/primary`,
+        DELETE_IMAGE: (imageId: string) =>
+            `/products/${imageId}/image`,
+
+        CREATE_VARIANT: (productId: string) =>
+            `/products/${productId}/variants`,
+        UPDATE_VARIANT: (variantId: string) =>
+            `/products/variants/${variantId}`,
+        DELETE_VARIANT: (variantId: string) =>
+            `/products/variants/${variantId}`,
     },
     REVIEWS: {
         LIST: (productId: string) => `/reviews/${productId}`,

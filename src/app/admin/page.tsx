@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { AlertCircle, LayoutDashboard, RefreshCw } from "lucide-react";
 
 import AdminOrderStatus from "@/components/admin/AdminOrderStatus";
 import AdminRecentOrders from "@/components/admin/AdminRecentOrders";
@@ -15,90 +16,140 @@ import type { AdminSalesPeriod } from "@/types/admin";
 export default function AdminDashboardPage() {
   const [salesPeriod, setSalesPeriod] = useState<AdminSalesPeriod>("7d");
 
-  const { data, isLoading, isError } = useAdminDashboard();
+  const {
+    data,
+    isLoading,
+    isError,
+    refetch: refetchDashboard,
+  } = useAdminDashboard();
 
   const {
     data: salesData,
     isLoading: isSalesLoading,
     isError: isSalesError,
+    refetch: refetchSales,
   } = useAdminDashboardSales(salesPeriod);
 
+  // TechNova Style Unified Skeleton Loading State
   if (isLoading) {
     return (
-      <div>
-        <div className="mb-8">
-          <div className="h-8 w-40 animate-pulse rounded bg-gray-200" />
-
-          <div className="mt-2 h-4 w-64 animate-pulse rounded bg-gray-200" />
+      <main className="space-y-8 animate-pulse">
+        {/* Header Skeleton */}
+        <div className="flex items-center gap-3 border-b border-slate-200/80 pb-6">
+          <div className="h-8 w-8 rounded-xl bg-slate-200" />
+          <div className="space-y-2">
+            <div className="h-7 w-48 rounded-xl bg-slate-200" />
+            <div className="h-4 w-64 rounded-lg bg-slate-100" />
+          </div>
         </div>
 
+        {/* Stats Grid Skeleton (4 Cards) */}
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
           {Array.from({ length: 4 }).map((_, index) => (
             <div
               key={index}
-              className="h-32 animate-pulse rounded-xl border bg-white"
+              className="h-28 rounded-3xl border border-slate-200/80 bg-slate-100/70 p-5"
             />
           ))}
         </div>
 
-        <div className="mt-6 h-125 animate-pulse rounded-xl border bg-white" />
+        {/* Sales Overview Skeleton */}
+        <div className="h-96 rounded-3xl border border-slate-200/80 bg-slate-100/70 p-6" />
 
-        <div className="mt-6 grid gap-6 xl:grid-cols-3">
-          <div className="h-80 animate-pulse rounded-xl border bg-white" />
-
-          <div className="h-80 animate-pulse rounded-xl border bg-white xl:col-span-2" />
+        {/* Status & Recent Orders Grid Skeleton */}
+        <div className="grid gap-6 xl:grid-cols-3">
+          <div className="h-80 rounded-3xl border border-slate-200/80 bg-slate-100/70 p-6 xl:col-span-1" />
+          <div className="h-80 rounded-3xl border border-slate-200/80 bg-slate-100/70 p-6 xl:col-span-2" />
         </div>
-      </div>
+      </main>
     );
   }
 
+  // TechNova Style Error State
   if (isError || !data) {
     return (
-      <div>
-        <div className="mb-8">
-          <h1 className="text-2xl font-bold tracking-tight text-gray-900">
-            Dashboard
-          </h1>
-
-          <p className="mt-1 text-sm text-gray-500">
-            Overview of your TechNova store.
+      <main className="space-y-8">
+        <div className="border-b border-slate-200/80 pb-6">
+          <div className="flex items-center gap-2.5">
+            <span className="flex h-8 w-8 items-center justify-center rounded-xl border border-blue-100 bg-blue-50 text-blue-600">
+              <LayoutDashboard className="h-4 w-4" />
+            </span>
+            <h1 className="text-2xl font-extrabold tracking-tight text-slate-900 sm:text-3xl">
+              Dashboard
+            </h1>
+          </div>
+          <p className="mt-1 text-sm font-medium text-slate-500">
+            Overview of your TechNova store analytics and metrics
           </p>
         </div>
 
-        <div className="rounded-xl border border-red-200 bg-red-50 p-6">
-          <p className="text-sm font-medium text-red-700">
-            Failed to load dashboard data.
+        <div className="relative overflow-hidden rounded-3xl border border-rose-200 bg-rose-50/70 p-8 text-center sm:p-12 shadow-xs">
+          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-rose-100 text-rose-600">
+            <AlertCircle className="h-6 w-6" />
+          </div>
+
+          <h2 className="mt-4 text-xl font-extrabold text-slate-900 sm:text-2xl">
+            Failed to Load Dashboard Data
+          </h2>
+
+          <p className="mx-auto mt-2 max-w-md text-sm font-medium text-slate-600">
+            We ran into an issue retrieving your admin metrics. Please check
+            your network or try reloading.
           </p>
+
+          <button
+            type="button"
+            onClick={() => refetchDashboard()}
+            className="mt-6 inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-6 py-3 text-sm font-bold text-slate-700 shadow-xs transition hover:bg-slate-50 hover:text-slate-900 active:scale-[0.98]"
+          >
+            <RefreshCw className="h-4 w-4" />
+            Try Again
+          </button>
         </div>
-      </div>
+      </main>
     );
   }
 
   return (
-    <div>
+    <main className="space-y-8">
       {/* Page Header */}
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold tracking-tight text-gray-900">
-          Dashboard
-        </h1>
-
-        <p className="mt-1 text-sm text-gray-500">
-          Overview of your TechNova store.
+      <div className="border-b border-slate-200/80 pb-6">
+        <div className="flex items-center gap-2.5">
+          <span className="flex h-8 w-8 items-center justify-center rounded-xl border border-blue-100 bg-blue-50 text-blue-600">
+            <LayoutDashboard className="h-4 w-4" />
+          </span>
+          <h1 className="text-2xl font-extrabold tracking-tight text-slate-900 sm:text-3xl">
+            Dashboard
+          </h1>
+        </div>
+        <p className="mt-1 text-sm font-medium text-slate-500">
+          Overview of your TechNova store analytics and metrics
         </p>
       </div>
 
-      {/* Statistics */}
+      {/* Statistics Grid */}
       <AdminStatsGrid summary={data.data.summary} />
 
       {/* Sales Overview */}
-      <div className="mt-6">
+      <div>
         {isSalesLoading ? (
-          <div className="h-125 animate-pulse rounded-xl border bg-white" />
+          <div className="h-96 animate-pulse rounded-3xl border border-slate-200/80 bg-slate-100/70 p-6" />
         ) : isSalesError || !salesData ? (
-          <div className="rounded-xl border border-red-200 bg-red-50 p-6">
-            <p className="text-sm font-medium text-red-700">
-              Failed to load sales data.
+          <div className="relative overflow-hidden rounded-2xl border border-rose-200 bg-rose-50/70 p-6 text-center shadow-xs">
+            <p className="text-xs font-extrabold uppercase tracking-wider text-rose-800">
+              Sales Data Issue
             </p>
+            <p className="mt-1 text-sm font-medium text-rose-700">
+              Failed to load sales chart analytics.
+            </p>
+            <button
+              type="button"
+              onClick={() => refetchSales()}
+              className="mt-3 inline-flex items-center gap-1.5 rounded-xl border border-rose-200 bg-white px-4 py-2 text-xs font-bold text-rose-700 shadow-xs transition hover:bg-rose-50 active:scale-[0.98]"
+            >
+              <RefreshCw className="h-3.5 w-3.5" />
+              Retry Sales Data
+            </button>
           </div>
         ) : (
           <AdminSalesOverview
@@ -110,7 +161,8 @@ export default function AdminDashboardPage() {
         )}
       </div>
 
-      <div className="mt-6 grid gap-6 xl:grid-cols-3">
+      {/* Status & Recent Orders Grid */}
+      <div className="grid gap-6 xl:grid-cols-3">
         <div className="xl:col-span-1">
           <AdminOrderStatus orders={data.data.orders} />
         </div>
@@ -119,6 +171,6 @@ export default function AdminDashboardPage() {
           <AdminRecentOrders orders={data.data.recentOrders} />
         </div>
       </div>
-    </div>
+    </main>
   );
 }
