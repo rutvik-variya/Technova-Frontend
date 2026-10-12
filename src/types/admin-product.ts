@@ -35,7 +35,7 @@ export interface AdminProduct {
     isFeatured: boolean;
     basePrice: string | number;
     maxPrice: string | number;
-    categoryId: string;
+    categoryId: ProductCategory;
     category: ProductCategory;
     productImages: ProductImage[];
     productVariants: ProductVariant[];
@@ -53,6 +53,8 @@ export interface ProductPagination {
 }
 
 export interface ProductListData {
+    id: string;
+    name: string;
     products: AdminProduct[];
     pagination: ProductPagination;
 }

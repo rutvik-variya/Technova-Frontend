@@ -7,3 +7,5 @@ export interface Category {
     createdAt?: string;
     updatedAt?: string;
 }
+
+export type CategoriesResponse = Category[];

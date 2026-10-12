@@ -4,10 +4,23 @@ import Link from "next/link";
 
 import { useAdminProducts } from "@/hooks/admin/products/use-admin-products";
 
-export default function AdminProductsPage() {
-  const { data, isPending, isError, error, refetch } = useAdminProducts();
+import { useState } from "react";
 
-  const products = data?.data?.products ?? [];
+export default function AdminProductsPage() {
+  const [page, setPage] = useState(1);
+  const limit = 10;
+
+  const {
+    data: productsData,
+    isPending,
+    isFetching,
+    isError,
+    error,
+    refetch,
+  } = useAdminProducts({ page, limit });
+
+  const products = productsData?.data?.products ?? [];
+  const pagination = productsData?.data?.pagination;
 
   return (
     <main className="space-y-6 p-4 sm:p-6 lg:p-8">
@@ -21,9 +34,9 @@ export default function AdminProductsPage() {
 
         <Link
           href="/admin/products/new"
-          className="rounded-lg bg-gray-900 px-4 py-2.5 text-center text-sm font-medium text-white hover:bg-gray-700"
+          className="inline-flex items-center justify-center rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-700"
         >
-          + Add Product
+          + Add product
         </Link>
       </div>
 
@@ -135,8 +148,8 @@ export default function AdminProductsPage() {
 
                     <td className="px-5 py-4">
                       <Link
-                        href={`/admin/products/${product.id}/edit`}
-                        className="font-medium text-blue-600 hover:text-blue-800"
+                        href={`/admin/products/${product.slug}/edit`}
+                        className="text-sm font-medium text-blue-600 hover:text-blue-800"
                       >
                         Edit
                       </Link>
@@ -146,6 +159,36 @@ export default function AdminProductsPage() {
               })}
             </tbody>
           </table>
+
+          {pagination && pagination.totalPages > 0 && (
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <p className="text-sm text-gray-500">
+                Page {pagination.page} of {pagination.totalPages}
+                {" · "}
+                {pagination.total} products
+              </p>
+
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  disabled={!pagination.hasPrevious || isFetching}
+                  onClick={() => setPage((current) => current - 1)}
+                  className="rounded-lg border border-gray-300 px-4 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  Previous
+                </button>
+
+                <button
+                  type="button"
+                  disabled={!pagination.hasNext || isFetching}
+                  onClick={() => setPage((current) => current + 1)}
+                  className="rounded-lg border border-gray-300 px-4 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  Next
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       )}
     </main>

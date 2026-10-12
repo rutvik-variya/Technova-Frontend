@@ -66,7 +66,6 @@ export const QUERY_KEYS = {
     ADMIN_PRODUCTS: {
         ALL: ["admin", "products"] as const,
         LIST: ["admin", "products", "list"] as const,
-        DETAIL: (id: string) =>
-            ["admin", "products", "detail", id] as const,
+        DETAIL: (slug: string) => ["admin", "products", "detail", slug] as const,
     },
 } as const;

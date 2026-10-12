@@ -1,4 +1,3 @@
-
 import {
     getRequest,
     postRequest,
@@ -7,6 +6,8 @@ import {
 } from "@/lib/api-request";
 
 import { API_ENDPOINTS } from "@/constants/api";
+
+import type { ApiResponse as RequestApiResponse } from "@/types/api";
 
 import type {
     AdminProduct,
@@ -21,35 +22,44 @@ import type {
 } from "@/types/admin-product";
 
 // Get products
-export const getAdminProductsService = async (): Promise<
-    ApiResponse<ProductListData>
-> => {
-    const response = await getRequest<ApiResponse<ProductListData>>(
+// services/admin-product.service.ts
+export const getAdminProductsService = async (
+    page = 1,
+    limit = 10,
+): Promise<RequestApiResponse<ProductListData>> => {
+    const response = await getRequest<ProductListData>(
         API_ENDPOINTS.PRODUCTS.LIST,
+        { page, limit },
     );
-
-    return response.data;
+    return response;
 };
 
 // Get product by ID
-export const getAdminProductByIdService = async (
-    id: string,
-): Promise<ApiResponse<AdminProduct>> => {
-    const response = await getRequest<ApiResponse<AdminProduct>>(
-        API_ENDPOINTS.PRODUCTS.DETAIL(id),
+export const getAdminProductBySlugService = async (
+    slug: string,
+): Promise<RequestApiResponse<AdminProduct>> => {
+    const response = await getRequest<AdminProduct>(
+        API_ENDPOINTS.PRODUCTS.DETAIL(slug),
     );
-
-    return response.data;
+    return response;
 };
+
 
 // Create product
 export const createAdminProductService = async (
     payload: CreateProductPayload,
 ): Promise<ApiResponse<AdminProduct>> => {
+    const formData = new FormData();
+    Object.entries(payload).forEach(([key, value]) => {
+        if (value !== undefined && value !== null) {
+            formData.append(key, String(value));
+        }
+    });
+
     const response = await postRequest<
         ApiResponse<AdminProduct>,
-        CreateProductPayload
-    >(API_ENDPOINTS.PRODUCTS.CREATE, payload);
+        FormData
+    >(API_ENDPOINTS.PRODUCTS.CREATE, formData);
 
     return response.data;
 };
@@ -79,6 +89,7 @@ export const deleteAdminProductService = async (
 };
 
 // Upload multiple product images
+// services/admin-product.service.ts
 export const uploadProductImagesService = async (
     productId: string,
     files: File[],
@@ -92,11 +103,13 @@ export const uploadProductImagesService = async (
     const response = await postRequest<
         ApiResponse<ProductImage[]>,
         FormData
-    >(API_ENDPOINTS.PRODUCTS.UPLOAD_IMAGES(productId), formData);
+    >(
+        API_ENDPOINTS.PRODUCTS.UPLOAD_IMAGES(productId),
+        formData,
+    );
 
     return response.data;
 };
-
 // Set primary image
 export const setPrimaryProductImageService = async (
     imageId: string,
@@ -124,10 +137,17 @@ export const createProductVariantService = async (
     productId: string,
     payload: CreateVariantPayload,
 ): Promise<ApiResponse<ProductVariant>> => {
+    const formData = new FormData();
+    Object.entries(payload).forEach(([key, value]) => {
+        if (value !== undefined && value !== null) {
+            formData.append(key, String(value));
+        }
+    });
+
     const response = await postRequest<
         ApiResponse<ProductVariant>,
-        CreateVariantPayload
-    >(API_ENDPOINTS.PRODUCTS.CREATE_VARIANT(productId), payload);
+        FormData
+    >(API_ENDPOINTS.PRODUCTS.CREATE_VARIANT(productId), formData);
 
     return response.data;
 };
