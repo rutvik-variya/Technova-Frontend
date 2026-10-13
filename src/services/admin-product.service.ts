@@ -106,10 +106,16 @@ export const uploadProductImagesService = async (
     >(
         API_ENDPOINTS.PRODUCTS.UPLOAD_IMAGES(productId),
         formData,
+        {
+            headers: {
+                "Content-Type": "multipart/form-data",
+            },
+        }
     );
 
     return response.data;
 };
+
 // Set primary image
 export const setPrimaryProductImageService = async (
     imageId: string,
@@ -137,17 +143,11 @@ export const createProductVariantService = async (
     productId: string,
     payload: CreateVariantPayload,
 ): Promise<ApiResponse<ProductVariant>> => {
-    const formData = new FormData();
-    Object.entries(payload).forEach(([key, value]) => {
-        if (value !== undefined && value !== null) {
-            formData.append(key, String(value));
-        }
-    });
-
+    // REMOVE FormData - just pass the payload directly as JSON
     const response = await postRequest<
         ApiResponse<ProductVariant>,
-        FormData
-    >(API_ENDPOINTS.PRODUCTS.CREATE_VARIANT(productId), formData);
+        CreateVariantPayload
+    >(API_ENDPOINTS.PRODUCTS.CREATE_VARIANT(productId), payload);
 
     return response.data;
 };

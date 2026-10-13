@@ -15,13 +15,19 @@ export interface ProductImage {
 }
 
 export interface ProductVariant {
-    id: string;
+    id: string;              // ← must exist (variant's own id)
+    productId: string;       // ← parent product id
     sku: string;
     ram: string | null;
     storage: string | null;
     color: string | null;
     price: string | number;
+    comparePrice: string | number | null;
     stock: number;
+    isActive: boolean;
+    createdAt: string;
+    updatedAt: string;
+    deletedAt: string | null;
 }
 
 export interface AdminProduct {
@@ -81,7 +87,7 @@ export interface CreateVariantPayload {
     ram?: string;
     storage?: string;
     color?: string;
-    price: number;
+    price: number; // Must be a number, not a string
     comparePrice?: number;
     stock: number;
 }

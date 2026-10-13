@@ -1,5 +1,6 @@
 import { api } from "@/lib/axios";
 import type { ApiResponse } from "@/types/api";
+import { AxiosRequestConfig } from "axios";
 
 export const getRequest = async <T>(
     url: string,
@@ -16,10 +17,12 @@ export const getRequest = async <T>(
 export const postRequest = async <T, B = unknown>(
     url: string,
     body?: B,
+    config?: AxiosRequestConfig,
 ): Promise<ApiResponse<T>> => {
     const response = await api.post<ApiResponse<T>>(
         url,
         body,
+        config, // Pass the config as the third argument to axios
     );
 
     return response.data;

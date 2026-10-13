@@ -3,12 +3,15 @@
 import Link from "next/link";
 
 import { useAdminProducts } from "@/hooks/admin/products/use-admin-products";
+import { useDeleteAdminProduct } from "@/hooks/admin/products/use-delete-admin-product";
 
 import { useState } from "react";
 
 export default function AdminProductsPage() {
   const [page, setPage] = useState(1);
   const limit = 10;
+
+  const deleteProductMutation = useDeleteAdminProduct();
 
   const {
     data: productsData,
@@ -22,6 +25,15 @@ export default function AdminProductsPage() {
   const products = productsData?.data?.products ?? [];
   const pagination = productsData?.data?.pagination;
 
+  const handleProductDelete = (deleteProductId: string) => {
+    const confirmed = window.confirm(
+      "Are you sure you want to delete this product?",
+    );
+
+    if (confirmed) {
+      deleteProductMutation.mutate(deleteProductId);
+    }
+  };
   return (
     <main className="space-y-6 p-4 sm:p-6 lg:p-8">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -91,7 +103,6 @@ export default function AdminProductsPage() {
 
             <tbody className="divide-y divide-gray-100">
               {products.map((product) => {
-                console.log("product::::::>", product);
                 const image =
                   product.productImages?.find((item) => item.isPrimary) ??
                   product.productImages?.[0];
@@ -153,12 +164,30 @@ export default function AdminProductsPage() {
                       >
                         Edit
                       </Link>
+                      <button
+                        type="button"
+                        disabled={deleteProductMutation.isPending}
+                        onClick={() => handleProductDelete(product.id)}
+                        className="rounded-lg border border-red-200 px-3 py-2 text-sm font-medium text-red-600 disabled:cursor-not-allowed disabled:opacity-50"
+                      >
+                        {deleteProductMutation.isPending
+                          ? "Deleting..."
+                          : "Delete"}
+                      </button>
                     </td>
                   </tr>
                 );
               })}
             </tbody>
           </table>
+
+          {deleteProductMutation.isError && (
+            <p className="mt-3 text-sm text-red-600" role="alert">
+              {deleteProductMutation.error instanceof Error
+                ? deleteProductMutation.error.message
+                : "Failed to delete product. Please try again."}
+            </p>
+          )}
 
           {pagination && pagination.totalPages > 0 && (
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">

@@ -1,3 +1,4 @@
+
 export interface Category {
     id: string;
     name: string;
@@ -9,3 +10,11 @@ export interface Category {
 }
 
 export type CategoriesResponse = Category[];
+
+export interface CreateCategoryPayload {
+    name: string;
+    description?: string;
+    image?: string;
+}
+
+export type UpdateCategoryPayload = Partial<CreateCategoryPayload>;

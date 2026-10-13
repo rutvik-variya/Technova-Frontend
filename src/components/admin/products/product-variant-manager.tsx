@@ -34,9 +34,9 @@ type VariantFormValues = z.output<typeof variantSchema>;
 
 interface ProductVariantManagerProps {
   productId: string;
+  productSlug: string; // <--- Add
   variants: ProductVariant[];
 }
-
 const emptyValues: VariantFormValues = {
   sku: "",
   ram: "",
@@ -49,6 +49,7 @@ const emptyValues: VariantFormValues = {
 
 export default function ProductVariantManager({
   productId,
+  productSlug,
   variants,
 }: ProductVariantManagerProps) {
   const [editingVariantId, setEditingVariantId] = useState<string | null>(null);
@@ -111,10 +112,18 @@ export default function ProductVariantManager({
     }
   };
 
-  const handleDelete = (variantId: string) => {
-    if (!window.confirm("Delete this product variant?")) return;
+  const handleDelete = (variant: ProductVariant) => {
+    // console.log("🗑️ variant.id:", variant.id);
+    // console.log("🗑️ variant.productId:", variant.productId);
+    // console.log("🗑️ productId prop:", productId);
 
-    deleteMutation.mutate({ productId, variantId });
+    if (!window.confirm(`Delete variant ${variant.sku}?`)) return;
+
+    deleteMutation.mutate({
+      productId,
+      productSlug,
+      variantId: variant.id,
+    });
   };
 
   const fields = [
@@ -242,10 +251,10 @@ export default function ProductVariantManager({
                       Edit
                     </button>
                     <button
-                      type="button"
-                      disabled={deleteMutation.isPending}
-                      onClick={() => handleDelete(variant.id)}
-                      className="font-medium text-red-600 disabled:opacity-50"
+                      onClick={() => {
+                        console.log("Full variant object:", variant);
+                        handleDelete(variant);
+                      }}
                     >
                       Delete
                     </button>

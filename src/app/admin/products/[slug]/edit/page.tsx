@@ -143,6 +143,7 @@ export default function EditAdminProductPage({
 
           <ProductVariantManager
             productId={adminProduct.id}
+            productSlug={slug}
             variants={adminProduct.productVariants ?? []}
           />
         </div>
