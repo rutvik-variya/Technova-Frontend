@@ -48,18 +48,11 @@ export const getAdminProductBySlugService = async (
 // Create product
 export const createAdminProductService = async (
     payload: CreateProductPayload,
-): Promise<ApiResponse<AdminProduct>> => {
-    const formData = new FormData();
-    Object.entries(payload).forEach(([key, value]) => {
-        if (value !== undefined && value !== null) {
-            formData.append(key, String(value));
-        }
-    });
-
-    const response = await postRequest<
-        ApiResponse<AdminProduct>,
-        FormData
-    >(API_ENDPOINTS.PRODUCTS.CREATE, formData);
+): Promise<AdminProduct> => {
+    const response = await postRequest<AdminProduct, CreateProductPayload>(
+        API_ENDPOINTS.PRODUCTS.CREATE,
+        payload,
+    );
 
     return response.data;
 };

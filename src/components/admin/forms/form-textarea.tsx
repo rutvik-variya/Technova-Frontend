@@ -23,9 +23,9 @@ export default function FormTextarea<T extends FieldValues>({
 }: FormTextareaProps<T>) {
   return (
     <div className="space-y-1.5">
-      <label htmlFor={name} className="block text-sm font-medium text-gray-700">
+      <label htmlFor={name} className="block text-xs font-bold text-slate-700">
         {label}
-        {required && <span className="ml-1 text-red-500">*</span>}
+        {required && <span className="ml-1 text-rose-500">*</span>}
       </label>
 
       <textarea
@@ -34,16 +34,16 @@ export default function FormTextarea<T extends FieldValues>({
         placeholder={placeholder}
         disabled={disabled}
         aria-invalid={Boolean(error)}
-        className={`w-full resize-y rounded-lg border bg-white px-3 py-2.5 text-sm text-gray-900 outline-none transition focus:ring-2 disabled:cursor-not-allowed disabled:bg-gray-100 ${
+        className={`w-full resize-y rounded-2xl border bg-white px-3.5 py-2.5 text-xs text-slate-900 outline-none transition duration-150 placeholder:text-slate-400 disabled:cursor-not-allowed disabled:bg-slate-50 disabled:opacity-60 ${
           error
-            ? "border-red-500 focus:ring-red-100"
-            : "border-gray-300 focus:border-blue-500 focus:ring-blue-100"
+            ? "border-rose-300 focus:border-rose-500 focus:ring-1 focus:ring-rose-500"
+            : "border-slate-200 focus:border-slate-900 focus:ring-1 focus:ring-slate-900"
         }`}
         {...register(name)}
       />
 
       {error && (
-        <p className="text-sm text-red-600" role="alert">
+        <p className="text-xs font-semibold text-rose-600" role="alert">
           {error}
         </p>
       )}

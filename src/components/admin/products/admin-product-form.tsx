@@ -1,8 +1,10 @@
 "use client";
 
+import type { ReactNode } from "react";
 import { useEffect } from "react";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { AlertCircle } from "lucide-react";
 
 import FormInput from "@/components/admin/forms/form-input";
 import FormTextarea from "@/components/admin/forms/form-textarea";
@@ -23,6 +25,8 @@ interface AdminProductFormProps {
   isSubmitting: boolean;
   submitError?: string | null;
   onSubmit: (values: AdminProductFormValues) => void;
+  extraSection?: ReactNode;
+  canSubmit?: boolean;
 }
 
 const defaultValues: AdminProductFormValues = {
@@ -40,6 +44,8 @@ export default function AdminProductForm({
   isSubmitting,
   submitError,
   onSubmit,
+  extraSection,
+  canSubmit = true,
 }: AdminProductFormProps) {
   const {
     register,
@@ -68,6 +74,7 @@ export default function AdminProductForm({
   }, [initialProduct, categories, reset]);
 
   const submitHandler: SubmitHandler<AdminProductFormValues> = (values) => {
+    if (!canSubmit) return;
     onSubmit(values);
   };
 
@@ -80,16 +87,16 @@ export default function AdminProductForm({
     <form
       onSubmit={handleSubmit(submitHandler)}
       noValidate
-      className="space-y-6 rounded-xl border border-gray-200 bg-white p-5 shadow-sm sm:p-7"
+      className="space-y-6 rounded-3xl border border-slate-200/80 bg-white p-6 shadow-xs sm:p-8"
     >
       <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
         <div className="md:col-span-2">
           <FormInput<AdminProductFormValues>
             name="name"
-            label="Product name"
+            label="Product Name"
             register={register}
             error={errors.name?.message}
-            placeholder="Enter product name"
+            placeholder="Enter full product name"
             required
             disabled={isSubmitting}
           />
@@ -100,7 +107,7 @@ export default function AdminProductForm({
           label="Brand"
           register={register}
           error={errors.brand?.message}
-          placeholder="e.g. Samsung"
+          placeholder="e.g. Apple, Samsung, Sony"
           required
           disabled={isSubmitting}
         />
@@ -118,7 +125,7 @@ export default function AdminProductForm({
 
         <FormSelect<AdminProductFormValues>
           name="status"
-          label="Status"
+          label="Publication Status"
           register={register}
           options={[
             { label: "Draft", value: "DRAFT" },
@@ -131,10 +138,10 @@ export default function AdminProductForm({
 
         <FormTextarea<AdminProductFormValues>
           name="shortDescription"
-          label="Short description"
+          label="Short Description"
           register={register}
           error={errors.shortDescription?.message}
-          placeholder="Brief product summary"
+          placeholder="Brief overview summary for product cards"
           rows={3}
           required
           disabled={isSubmitting}
@@ -143,10 +150,10 @@ export default function AdminProductForm({
         <div className="md:col-span-2">
           <FormTextarea<AdminProductFormValues>
             name="description"
-            label="Full description"
+            label="Full Description"
             register={register}
             error={errors.description?.message}
-            placeholder="Enter the complete product description"
+            placeholder="Enter complete technical specifications and details"
             rows={6}
             required
             disabled={isSubmitting}
@@ -155,23 +162,25 @@ export default function AdminProductForm({
       </div>
 
       {categories.length === 0 && (
-        <p className="text-sm text-amber-700">
-          No categories are available. Create a category before adding a
-          product.
-        </p>
+        <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-xs font-semibold text-amber-800">
+          No categories found. Create a category before publishing new products.
+        </div>
       )}
+
+      {extraSection}
 
       {submitError && (
         <div
           role="alert"
-          className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
+          className="flex items-center gap-2 rounded-2xl border border-rose-200 bg-rose-50/70 p-4 text-xs font-semibold text-rose-700"
         >
-          {submitError}
+          <AlertCircle className="h-4 w-4 shrink-0 text-rose-600" />
+          <span>{submitError}</span>
         </div>
       )}
 
       <FormActions
-        submitLabel={initialProduct ? "Save changes" : "Create product"}
+        submitLabel={initialProduct ? "Save Changes" : "Create Product"}
         isSubmitting={isSubmitting}
         cancelHref="/admin/products"
       />

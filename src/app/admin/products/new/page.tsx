@@ -1,84 +1,118 @@
 "use client";
 
+import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { Boxes, CheckCircle2, ArrowRight } from "lucide-react";
 
 import AdminProductForm from "@/components/admin/products/admin-product-form";
+import ProductImageManager from "@/components/admin/products/product-image-manager";
+import ProductVariantManager from "@/components/admin/products/product-variant-manager";
+
 import { useCreateAdminProduct } from "@/hooks/admin/products/use-create-admin-product";
 import { useCategories } from "@/hooks/categories/use-categories";
 
+import type { AdminProduct } from "@/types/admin-product";
 import type { AdminProductFormValues } from "@/validations/admin-product.schema";
 
 export default function NewAdminProductPage() {
   const router = useRouter();
 
-  const {
-    data: categoriesResponse,
-    isPending: isCategoriesPending,
-    isError: isCategoriesError,
-    error: categoriesError,
-    refetch: refetchCategories,
-  } = useCategories();
+  const [createdProduct, setCreatedProduct] = useState<AdminProduct | null>(
+    null,
+  );
 
-  const categories = categoriesResponse?.data ?? [];
-  
+  const categoriesQuery = useCategories();
   const createProduct = useCreateAdminProduct();
 
-  const handleSubmit = (values: AdminProductFormValues) => {
-    createProduct.mutate(values, {
-      onSuccess: () => {
-        router.push("/admin/products");
-      },
-    });
+  const categories = categoriesQuery.data?.data ?? [];
+
+  const handleSubmit = async (values: AdminProductFormValues) => {
+    try {
+      const product = await createProduct.mutateAsync(values);
+
+      if (!product?.id) {
+        throw new Error(
+          "Product creation succeeded, but the returned product ID is missing.",
+        );
+      }
+
+      setCreatedProduct(product);
+    } catch (error) {
+      console.error("Create product failed:", error);
+    }
   };
 
-  const submitError = createProduct.isError
-    ? createProduct.error instanceof Error
-      ? createProduct.error.message
-      : "Unable to create product. Please try again."
-    : null;
-
-  if (isCategoriesPending) {
+  if (categoriesQuery.isPending) {
     return (
-      <div className="p-6 text-sm text-gray-500">Loading categories...</div>
-    );
-  }
-
-  if (isCategoriesError) {
-    return (
-      <div className="space-y-3 p-6">
-        <p className="text-sm text-red-600">
-          {categoriesError instanceof Error
-            ? categoriesError.message
-            : "Unable to load categories."}
-        </p>
-
-        <button
-          type="button"
-          onClick={() => void refetchCategories()}
-          className="rounded-lg border border-gray-300 px-4 py-2 text-sm hover:bg-gray-50"
-        >
-          Retry
-        </button>
-      </div>
+      <main className="mx-auto w-full max-w-4xl space-y-8 animate-pulse">
+        <div className="h-8 w-48 rounded-xl bg-slate-200" />
+        <div className="h-96 rounded-3xl border border-slate-200/80 bg-slate-100/70 p-8" />
+      </main>
     );
   }
 
   return (
-    <div className="mx-auto w-full max-w-4xl space-y-6 p-4 sm:p-6 lg:p-8">
-      <div>
-        <p className="text-sm text-gray-500">Admin / Products</p>
-        <h1 className="mt-1 text-2xl font-bold text-gray-900">Add product</h1>
-        <p className="mt-2 text-sm text-gray-500">
-          Enter the basic details for your new product.
+    <main className="mx-auto w-full max-w-4xl space-y-8">
+      {/* Page Header */}
+      <div className="border-b border-slate-200/80 pb-6">
+        <div className="flex items-center gap-2.5">
+          <span className="flex h-8 w-8 items-center justify-center rounded-xl border border-blue-100 bg-blue-50 text-blue-600">
+            <Boxes className="h-4 w-4" />
+          </span>
+          <h1 className="text-2xl font-extrabold tracking-tight text-slate-900 sm:text-3xl">
+            {createdProduct ? "Manage Product Assets" : "Add Product"}
+          </h1>
+        </div>
+        <p className="mt-1 text-sm font-medium text-slate-500">
+          {createdProduct
+            ? `Upload media gallery and configure options for ${createdProduct.name}.`
+            : "Define product core details, then add media and SKU variants."}
         </p>
       </div>
 
-      <AdminProductForm
-        categories={categories}
-        isSubmitting={createProduct.isPending}
-        submitError={submitError}
-        onSubmit={handleSubmit}
-      />
-    </div>
+      {!createdProduct ? (
+        <AdminProductForm
+          categories={categories}
+          isSubmitting={createProduct.isPending}
+          onSubmit={handleSubmit}
+        />
+      ) : (
+        <div className="space-y-8">
+          <div className="flex items-center gap-3 rounded-2xl border border-emerald-200 bg-emerald-50/70 p-4 text-emerald-800 shadow-xs">
+            <CheckCircle2 className="h-5 w-5 shrink-0 text-emerald-600" />
+            <div>
+              <p className="text-xs font-extrabold">
+                Product Created: {createdProduct.name}
+              </p>
+              <p className="mt-0.5 text-xs font-medium text-emerald-700">
+                Next, add images and configure variants below.
+              </p>
+            </div>
+          </div>
+
+          <ProductImageManager
+            productId={createdProduct.id}
+            images={createdProduct.productImages ?? []}
+          />
+
+          <ProductVariantManager
+            productId={createdProduct.id}
+            productSlug={createdProduct.slug}
+            variants={createdProduct.productVariants ?? []}
+          />
+
+          <div className="flex justify-end pt-4">
+            <button
+              type="button"
+              onClick={() => router.push("/admin/products")}
+              className="inline-flex items-center gap-2 rounded-2xl bg-blue-600 px-6 py-3 text-sm font-bold text-white shadow-lg shadow-blue-600/20 transition hover:bg-blue-700 active:scale-[0.98]"
+            >
+              <span>Done — Back to Products</span>
+              <ArrowRight className="h-4 w-4" />
+            </button>
+          </div>
+        </div>
+      )}
+    </main>
   );
 }

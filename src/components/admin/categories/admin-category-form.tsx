@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { useForm, useWatch, type SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { ImageIcon, AlertCircle } from "lucide-react";
 
 import FormInput from "@/components/admin/forms/form-input";
 import FormTextarea from "@/components/admin/forms/form-textarea";
@@ -71,12 +72,12 @@ export default function AdminCategoryForm({
     <form
       onSubmit={handleSubmit(submitHandler)}
       noValidate
-      className="space-y-6 rounded-xl border border-gray-200 bg-white p-5 shadow-sm sm:p-7"
+      className="space-y-6 rounded-3xl border border-slate-200/80 bg-white p-6 shadow-xs sm:p-8"
     >
       <div className="space-y-5">
         <FormInput<AdminCategoryFormValues>
           name="name"
-          label="Category name"
+          label="Category Name"
           register={register}
           error={errors.name?.message}
           placeholder="e.g. Gaming Laptops"
@@ -103,20 +104,20 @@ export default function AdminCategoryForm({
           disabled={isSubmitting}
         />
 
-        <p className="-mt-3 text-xs text-gray-500">
+        <p className="-mt-3 text-[11px] font-medium text-slate-400">
           Enter a publicly accessible image URL. File uploads are not used.
         </p>
 
         {imageUrl?.trim() && !errors.image && (
-          <div className="space-y-2">
-            <p className="text-sm font-medium text-gray-700">Image preview</p>
+          <div className="space-y-2 pt-2">
+            <p className="text-xs font-bold text-slate-700">Image Preview</p>
 
-            <div className="flex min-h-40 items-center justify-center overflow-hidden rounded-lg border border-gray-200 bg-gray-50 p-3">
+            <div className="flex min-h-40 items-center justify-center overflow-hidden rounded-2xl border border-slate-200/80 bg-slate-50/60 p-4">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={imageUrl.trim()}
                 alt="Category preview"
-                className="max-h-56 max-w-full rounded-md object-contain"
+                className="max-h-56 max-w-full rounded-xl object-contain"
                 onError={(event) => {
                   event.currentTarget.style.visibility = "hidden";
                 }}
@@ -132,14 +133,15 @@ export default function AdminCategoryForm({
       {submitError && (
         <div
           role="alert"
-          className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
+          className="flex items-center gap-2 rounded-2xl border border-rose-200 bg-rose-50/70 p-4 text-xs font-semibold text-rose-700"
         >
-          {submitError}
+          <AlertCircle className="h-4 w-4 shrink-0 text-rose-600" />
+          <span>{submitError}</span>
         </div>
       )}
 
       <FormActions
-        submitLabel={initialCategory ? "Save changes" : "Create category"}
+        submitLabel={initialCategory ? "Save Changes" : "Create Category"}
         isSubmitting={isSubmitting}
         cancelHref="/admin/categories"
       />

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Layers, Pencil, Trash2, Loader2 } from "lucide-react";
 
 import type {
   ProductVariant,
@@ -34,9 +35,10 @@ type VariantFormValues = z.output<typeof variantSchema>;
 
 interface ProductVariantManagerProps {
   productId: string;
-  productSlug: string; // <--- Add
+  productSlug: string;
   variants: ProductVariant[];
 }
+
 const emptyValues: VariantFormValues = {
   sku: "",
   ram: "",
@@ -72,7 +74,6 @@ export default function ProductVariantManager({
 
   const startEditing = (variant: ProductVariant) => {
     setEditingVariantId(variant.id);
-
     form.reset({
       sku: variant.sku,
       ram: variant.ram ?? "",
@@ -100,11 +101,7 @@ export default function ProductVariantManager({
 
     if (editingVariantId) {
       updateMutation.mutate(
-        {
-          productId,
-          variantId: editingVariantId,
-          payload,
-        },
+        { productId, variantId: editingVariantId, payload },
         { onSuccess: resetForm },
       );
     } else {
@@ -113,17 +110,8 @@ export default function ProductVariantManager({
   };
 
   const handleDelete = (variant: ProductVariant) => {
-    // console.log("🗑️ variant.id:", variant.id);
-    // console.log("🗑️ variant.productId:", variant.productId);
-    // console.log("🗑️ productId prop:", productId);
-
     if (!window.confirm(`Delete variant ${variant.sku}?`)) return;
-
-    deleteMutation.mutate({
-      productId,
-      productSlug,
-      variantId: variant.id,
-    });
+    deleteMutation.mutate({ productId, productSlug, variantId: variant.id });
   };
 
   const fields = [
@@ -131,36 +119,34 @@ export default function ProductVariantManager({
     { name: "ram", label: "RAM", type: "text" },
     { name: "storage", label: "Storage", type: "text" },
     { name: "color", label: "Color", type: "text" },
-    { name: "price", label: "Price", type: "number" },
-    { name: "comparePrice", label: "Compare Price", type: "number" },
-    { name: "stock", label: "Stock", type: "number" },
+    { name: "price", label: "Price (₹)", type: "number" },
+    { name: "comparePrice", label: "Compare Price (₹)", type: "number" },
+    { name: "stock", label: "Stock Quantity", type: "number" },
   ] as const;
 
   return (
-    <section className="space-y-5 rounded-xl border border-gray-200 bg-white p-5">
+    <section className="space-y-6 rounded-3xl border border-slate-200/80 bg-white p-6 shadow-xs">
       <div>
-        <h2 className="text-lg font-semibold text-gray-900">
-          Product Variants
-        </h2>
-        <p className="mt-1 text-sm text-gray-500">
-          Manage SKU, options, price, and inventory for this product.
+        <h2 className="text-lg font-bold text-slate-900">Product Variants</h2>
+        <p className="mt-0.5 text-xs font-medium text-slate-500">
+          Configure SKUs, specs, pricing, and stock inventory
         </p>
       </div>
 
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {fields.map((field) => (
-            <div key={field.name}>
+            <div key={field.name} className="space-y-1.5">
               <label
                 htmlFor={field.name}
-                className="mb-1 block text-sm font-medium text-gray-700"
+                className="block text-xs font-bold text-slate-700"
               >
                 {field.label}
-                {field.name === "sku" ||
-                field.name === "price" ||
-                field.name === "stock"
-                  ? " *"
-                  : ""}
+                {(field.name === "sku" ||
+                  field.name === "price" ||
+                  field.name === "stock") && (
+                  <span className="ml-1 text-rose-500">*</span>
+                )}
               </label>
 
               <input
@@ -169,11 +155,11 @@ export default function ProductVariantManager({
                 step={field.name === "stock" ? "1" : "any"}
                 min={field.name === "stock" ? "0" : undefined}
                 {...form.register(field.name)}
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-gray-500"
+                className="w-full rounded-2xl border border-slate-200 bg-white px-3.5 py-2.5 text-xs text-slate-900 outline-none transition focus:border-slate-900 focus:ring-1 focus:ring-slate-900"
               />
 
               {form.formState.errors[field.name] && (
-                <p className="mt-1 text-xs text-red-600">
+                <p className="text-xs font-semibold text-rose-600">
                   {form.formState.errors[field.name]?.message}
                 </p>
               )}
@@ -181,104 +167,123 @@ export default function ProductVariantManager({
           ))}
         </div>
 
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-2 pt-2">
           <button
             type="submit"
             disabled={isSaving}
-            className="rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white disabled:opacity-50"
+            className="inline-flex items-center gap-2 rounded-2xl bg-slate-900 px-5 py-2.5 text-xs font-bold text-white shadow-xs transition hover:bg-slate-800 disabled:opacity-50 active:scale-[0.98]"
           >
-            {isSaving
-              ? "Saving..."
-              : editingVariantId
-                ? "Update Variant"
-                : "Add Variant"}
+            {isSaving ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin" />
+                <span>Saving...</span>
+              </>
+            ) : editingVariantId ? (
+              "Update Variant"
+            ) : (
+              "Add Variant"
+            )}
           </button>
 
           {editingVariantId && (
             <button
               type="button"
               onClick={resetForm}
-              className="rounded-lg border border-gray-300 px-4 py-2 text-sm"
+              className="rounded-2xl border border-slate-200 bg-white px-5 py-2.5 text-xs font-bold text-slate-700 shadow-xs transition hover:bg-slate-50 active:scale-[0.98]"
             >
               Cancel Edit
             </button>
           )}
         </div>
-
-        {(createMutation.isError || updateMutation.isError) && (
-          <p className="text-sm text-red-600">
-            {createMutation.error?.message ||
-              updateMutation.error?.message ||
-              "Failed to save the variant."}
-          </p>
-        )}
       </form>
 
-      <div className="overflow-x-auto">
-        <table className="w-full min-w-162.5 text-left text-sm">
-          <thead className="border-b border-gray-200 text-gray-500">
-            <tr>
-              <th className="px-3 py-3">SKU</th>
-              <th className="px-3 py-3">Options</th>
-              <th className="px-3 py-3">Price</th>
-              <th className="px-3 py-3">Stock</th>
-              <th className="px-3 py-3">Actions</th>
-            </tr>
-          </thead>
-
-          <tbody className="divide-y divide-gray-100">
-            {variants.map((variant) => (
-              <tr key={variant.id}>
-                <td className="px-3 py-3 font-medium text-gray-900">
-                  {variant.sku}
-                </td>
-                <td className="px-3 py-3 text-gray-600">
-                  {[variant.ram, variant.storage, variant.color]
-                    .filter(Boolean)
-                    .join(" / ") || "—"}
-                </td>
-                <td className="px-3 py-3">
-                  {Number(variant.price).toLocaleString()}
-                </td>
-                <td className="px-3 py-3">{variant.stock}</td>
-                <td className="px-3 py-3">
-                  <div className="flex gap-3">
-                    <button
-                      type="button"
-                      onClick={() => startEditing(variant)}
-                      className="font-medium text-blue-600"
-                    >
-                      Edit
-                    </button>
-                    <button
-                      onClick={() => {
-                        console.log("Full variant object:", variant);
-                        handleDelete(variant);
-                      }}
-                    >
-                      Delete
-                    </button>
-                  </div>
-                </td>
+      {/* Table */}
+      <div className="overflow-hidden rounded-2xl border border-slate-200/80 bg-white">
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-162.5 text-left text-xs">
+            <thead>
+              <tr className="border-b border-slate-100 bg-slate-50/60 text-[11px] font-extrabold uppercase tracking-wider text-slate-400">
+                <th className="px-5 py-3.5">SKU</th>
+                <th className="px-5 py-3.5">Options</th>
+                <th className="px-5 py-3.5">Price</th>
+                <th className="px-5 py-3.5">Stock</th>
+                <th className="px-5 py-3.5 text-right">Actions</th>
               </tr>
-            ))}
+            </thead>
 
-            {variants.length === 0 && (
-              <tr>
-                <td colSpan={5} className="px-3 py-6 text-center text-gray-500">
-                  No variants added yet.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
+            <tbody className="divide-y divide-slate-100 font-medium text-slate-600">
+              {variants.map((variant) => (
+                <tr
+                  key={variant.id}
+                  className="transition-colors hover:bg-slate-50/80"
+                >
+                  <td className="px-5 py-3.5 font-bold text-slate-900">
+                    <span className="rounded-lg border border-slate-200 bg-slate-50 px-2 py-0.5 font-mono text-[11px]">
+                      {variant.sku}
+                    </span>
+                  </td>
+
+                  <td className="px-5 py-3.5 text-slate-600">
+                    {[variant.ram, variant.storage, variant.color]
+                      .filter(Boolean)
+                      .join(" / ") || "—"}
+                  </td>
+
+                  <td className="px-5 py-3.5 font-extrabold text-slate-900">
+                    ₹{Number(variant.price).toLocaleString("en-IN")}
+                  </td>
+
+                  <td className="px-5 py-3.5">
+                    <span
+                      className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-[10px] font-extrabold ${
+                        variant.stock > 0
+                          ? "border-emerald-200 bg-emerald-50 text-emerald-700"
+                          : "border-rose-200 bg-rose-50 text-rose-700"
+                      }`}
+                    >
+                      {variant.stock} in stock
+                    </span>
+                  </td>
+
+                  <td className="px-5 py-3.5 text-right">
+                    <div className="flex items-center justify-end gap-2">
+                      <button
+                        type="button"
+                        onClick={() => startEditing(variant)}
+                        className="inline-flex items-center gap-1 rounded-xl border border-slate-200 bg-white px-2.5 py-1 text-xs font-bold text-slate-700 transition hover:border-blue-600/30 hover:bg-blue-50 hover:text-blue-600 active:scale-[0.98]"
+                      >
+                        <Pencil className="h-3 w-3" />
+                        <span>Edit</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => handleDelete(variant)}
+                        className="inline-flex items-center gap-1 rounded-xl border border-slate-200 bg-white px-2.5 py-1 text-xs font-bold text-slate-400 transition hover:border-rose-200 hover:bg-rose-50 hover:text-rose-600 active:scale-[0.98]"
+                      >
+                        <Trash2 className="h-3 w-3" />
+                        <span>Delete</span>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+
+              {variants.length === 0 && (
+                <tr>
+                  <td
+                    colSpan={5}
+                    className="px-5 py-8 text-center text-xs font-medium text-slate-400"
+                  >
+                    <Layers className="mx-auto mb-1 h-5 w-5 stroke-1" />
+                    No variants created yet.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
-
-      {deleteMutation.isError && (
-        <p className="text-sm text-red-600">
-          {deleteMutation.error.message || "Failed to delete the variant."}
-        </p>
-      )}
     </section>
   );
 }
