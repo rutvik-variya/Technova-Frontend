@@ -5,17 +5,12 @@ import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 
 import type { Category } from "@/types/category";
-import { CATEGORY_IMAGES } from "@/constants/category-images";
 
 interface CategoryCardProps {
   category: Category;
 }
 
 export default function CategoryCard({ category }: CategoryCardProps) {
-  const image =
-    CATEGORY_IMAGES[category.slug] ||
-    "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?auto=format&fit=crop&w=800&q=80";
-
   return (
     <Link
       href={`/products?category=${category.id}`}
@@ -24,13 +19,15 @@ export default function CategoryCard({ category }: CategoryCardProps) {
       <div className="flex items-center gap-3.5">
         {/* Circle Image Avatar */}
         <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-xl bg-slate-100 ring-2 ring-transparent transition-all duration-300 group-hover:ring-blue-600">
-          <Image
-            src={image}
-            alt={category.name}
-            fill
-            sizes="56px"
-            className="object-cover transition-transform duration-500 group-hover:scale-110"
-          />
+          {category.image && (
+            <Image
+              src={category.image}
+              alt={category.name}
+              fill
+              sizes="56px"
+              className="h-full w-full object-cover"
+            />
+          )}
         </div>
 
         {/* Text Details */}
