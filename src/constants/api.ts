@@ -16,7 +16,7 @@ export const API_ENDPOINTS = {
         DETAIL: (slug: string) => `/products/${slug}`,
         BRAND: "/products/brands",
         RELATED: (slug: string) => `/products/${slug}/related`,
-        
+
         CREATE: "/products",
         UPDATE: (id: string) => `/products/${id}`,
         DELETE: (id: string) => `/products/${id}`,
@@ -92,5 +92,15 @@ export const API_ENDPOINTS = {
     ADMIN: {
         DASHBOARD: "/admin/dashboard",
         DASHBOARD_SALES: "/admin/dashboard/sales",
+
+        ORDERS: {
+            LIST: "/order/admin/getAllOrders",
+            DETAIL: (orderId: string) =>
+                `/order/admin/${orderId}`,
+            UPDATE_STATUS: (orderId: string) =>
+                `/order/admin/${orderId}/status`,
+            TIMELINE: (orderId: string) =>
+                `/order/admin/${orderId}/timeline`,
+        },
     },
 } as const;
