@@ -102,5 +102,14 @@ export const API_ENDPOINTS = {
             TIMELINE: (orderId: string) =>
                 `/order/admin/${orderId}/timeline`,
         },
+
+        USERS: {
+            LIST: "/admin/users",
+            DETAIL: (userId: string) =>
+                `/admin/users/${userId}`,
+            UPDATE_ROLE: (userId: string) =>
+                `/admin/users/${userId}/role`,
+        },
+
     },
 } as const;

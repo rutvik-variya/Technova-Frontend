@@ -80,4 +80,13 @@ export const QUERY_KEYS = {
         TIMELINE: (orderId: string) =>
             ["admin", "orders", "timeline", orderId] as const,
     },
+    ADMIN_USERS: {
+        ALL: ["admin", "users"] as const,
+
+        LIST: (params?: unknown) =>
+            ["admin", "users", "list", params] as const,
+
+        DETAIL: (userId: string) =>
+            ["admin", "users", "detail", userId] as const,
+    },
 } as const;

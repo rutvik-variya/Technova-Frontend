@@ -6,7 +6,6 @@ import {
 import { API_ENDPOINTS } from "@/constants/api";
 
 import type {
-    AdminOrder,
     AdminOrderDetails,
     AdminOrderStatusUpdateResponse,
     AdminOrderTimelineItem,

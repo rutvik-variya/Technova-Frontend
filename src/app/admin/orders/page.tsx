@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { ShoppingCart, RefreshCw } from "lucide-react";
 
 import { useAdminOrders } from "@/hooks/admin/useAdminOrders";
 import type {
@@ -46,7 +47,6 @@ export default function AdminOrdersPage() {
   const { data, isLoading, isError, error, refetch, isFetching } =
     useAdminOrders(params);
 
-  // The service returns the nested listing result.
   const orders = data?.data ?? [];
   const meta = data?.meta;
 
@@ -60,12 +60,20 @@ export default function AdminOrdersPage() {
   };
 
   return (
-    <div className="space-y-6 p-4 sm:p-6 lg:p-8">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+    <main className="space-y-8">
+      {/* Header */}
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b border-slate-200/80 pb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Orders</h1>
-          <p className="mt-1 text-sm text-gray-500">
-            Manage and track customer orders.
+          <div className="flex items-center gap-2.5">
+            <span className="flex h-8 w-8 items-center justify-center rounded-xl border border-blue-100 bg-blue-50 text-blue-600">
+              <ShoppingCart className="h-4 w-4" />
+            </span>
+            <h1 className="text-2xl font-extrabold tracking-tight text-slate-900 sm:text-3xl">
+              Orders Management
+            </h1>
+          </div>
+          <p className="mt-1 text-sm font-medium text-slate-500">
+            Monitor, track, and manage all incoming customer orders and statuses
           </p>
         </div>
 
@@ -73,9 +81,12 @@ export default function AdminOrdersPage() {
           type="button"
           onClick={() => refetch()}
           disabled={isFetching}
-          className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50"
+          className="inline-flex items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-bold text-slate-700 shadow-xs transition hover:bg-slate-50 active:scale-[0.98] disabled:opacity-50"
         >
-          {isFetching ? "Refreshing..." : "Refresh"}
+          <RefreshCw
+            className={`h-4 w-4 ${isFetching ? "animate-spin" : ""}`}
+          />
+          <span>{isFetching ? "Refreshing..." : "Refresh Orders"}</span>
         </button>
       </div>
 
@@ -114,7 +125,7 @@ export default function AdminOrdersPage() {
       )}
 
       {!isLoading && !isError && (
-        <>
+        <div className="space-y-4">
           <OrdersTable orders={orders} />
 
           {meta && meta.totalPages > 0 && (
@@ -124,8 +135,8 @@ export default function AdminOrdersPage() {
               onPageChange={setPage}
             />
           )}
-        </>
+        </div>
       )}
-    </div>
+    </main>
   );
 }

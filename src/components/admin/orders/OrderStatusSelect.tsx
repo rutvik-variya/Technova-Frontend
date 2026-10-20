@@ -32,15 +32,11 @@ export default function OrderStatusSelect({
   };
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-
   const mutation = useUpdateAdminOrderStatus(orderId);
-
   const availableStatuses = ORDER_STATUS_TRANSITIONS[currentStatus];
 
   const handleStatusChange = (value: string) => {
     const nextStatus = value as OrderStatus;
-
-    // Do not allow invalid transitions from the frontend.
     if (!availableStatuses.includes(nextStatus)) {
       updateSelectedStatus(currentStatus);
       return;
@@ -76,16 +72,15 @@ export default function OrderStatusSelect({
   };
 
   return (
-    <div className="min-w-36 space-y-2">
+    <div className="min-w-37.5 space-y-2">
       <select
         aria-label={`Update status for ${orderNumber}`}
         value={selectedStatus}
         onChange={(event) => handleStatusChange(event.target.value)}
         disabled={mutation.isPending || availableStatuses.length === 0}
-        className="w-full rounded-lg border border-gray-300 bg-white px-2 py-2 text-xs font-medium text-gray-700 outline-none focus:border-gray-900 disabled:cursor-not-allowed disabled:opacity-50"
+        className="w-full rounded-2xl border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-700 outline-none transition focus:border-slate-900 disabled:cursor-not-allowed disabled:opacity-50"
       >
         <option value={currentStatus}>{currentStatus}</option>
-
         {availableStatuses.map((status) => (
           <option key={status} value={status}>
             {status}
@@ -96,10 +91,10 @@ export default function OrderStatusSelect({
       <OrderStatusBadge status={currentStatus} />
 
       {mutation.isError && (
-        <p role="alert" className="max-w-48 text-xs text-red-600">
+        <p role="alert" className="text-xs font-semibold text-rose-600">
           {mutation.error instanceof Error
             ? mutation.error.message
-            : "Unable to update order status."}
+            : "Unable to update status."}
         </p>
       )}
 

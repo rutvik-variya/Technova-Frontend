@@ -1,3 +1,5 @@
+import { AlertCircle, RefreshCw } from "lucide-react";
+
 interface OrdersErrorProps {
   message: string;
   onRetry: () => void;
@@ -5,15 +7,26 @@ interface OrdersErrorProps {
 
 export default function OrdersError({ message, onRetry }: OrdersErrorProps) {
   return (
-    <div className="rounded-xl border border-red-200 bg-red-50 p-6">
-      <p className="font-medium text-red-700">Failed to load orders.</p>
-      <p className="mt-1 text-sm text-red-600">{message}</p>
+    <div className="relative overflow-hidden rounded-3xl border border-rose-200 bg-rose-50/70 p-8 text-center sm:p-12 shadow-xs">
+      <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-rose-100 text-rose-600">
+        <AlertCircle className="h-6 w-6" />
+      </div>
+
+      <h2 className="mt-4 text-xl font-extrabold text-slate-900 sm:text-2xl">
+        Failed to load orders
+      </h2>
+
+      <p className="mx-auto mt-2 max-w-md text-sm font-medium text-slate-600">
+        {message}
+      </p>
+
       <button
         type="button"
         onClick={onRetry}
-        className="mt-3 rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700"
+        className="mt-6 inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-6 py-3 text-sm font-bold text-slate-700 shadow-xs transition hover:bg-slate-50 hover:text-slate-900 active:scale-[0.98]"
       >
-        Try again
+        <RefreshCw className="h-4 w-4" />
+        <span>Try again</span>
       </button>
     </div>
   );

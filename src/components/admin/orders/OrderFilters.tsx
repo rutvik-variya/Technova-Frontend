@@ -12,10 +12,11 @@ interface OrderFiltersProps {
   onReset: () => void;
 }
 
-const labelClass = "mb-1.5 block text-sm font-medium text-gray-700";
+const labelClass =
+  "block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1.5";
 
 const inputClass =
-  "w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm outline-none focus:border-gray-900";
+  "w-full rounded-2xl border border-slate-200 bg-white px-3.5 py-2.5 text-xs font-semibold text-slate-900 outline-none transition focus:border-slate-900 focus:ring-1 focus:ring-slate-900";
 
 const ORDER_STATUSES = [
   "PENDING",
@@ -49,11 +50,11 @@ export default function OrderFilters({
   onReset,
 }: OrderFiltersProps) {
   return (
-    <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+    <div className="rounded-3xl border border-slate-200/80 bg-white p-6 shadow-xs">
+      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4">
         <div>
           <label htmlFor="order-search" className={labelClass}>
-            Search order
+            Search Order
           </label>
           <input
             id="order-search"
@@ -67,7 +68,7 @@ export default function OrderFilters({
 
         <div>
           <label htmlFor="order-status" className={labelClass}>
-            Order status
+            Order Status
           </label>
           <select
             id="order-status"
@@ -86,7 +87,7 @@ export default function OrderFilters({
 
         <div>
           <label htmlFor="payment-status" className={labelClass}>
-            Payment status
+            Payment Status
           </label>
           <select
             id="payment-status"
@@ -105,7 +106,7 @@ export default function OrderFilters({
 
         <div>
           <label htmlFor="payment-method" className={labelClass}>
-            Payment method
+            Payment Method
           </label>
           <select
             id="payment-method"
@@ -123,11 +124,11 @@ export default function OrderFilters({
         </div>
       </div>
 
-      <div className="mt-4 flex justify-end">
+      <div className="mt-5 flex justify-end border-t border-slate-100 pt-4">
         <button
           type="button"
           onClick={onReset}
-          className="text-sm font-medium text-gray-600 underline underline-offset-4 hover:text-gray-900"
+          className="text-xs font-bold text-slate-500 underline underline-offset-4 hover:text-slate-900 transition-colors"
         >
           Clear filters
         </button>
