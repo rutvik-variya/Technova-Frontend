@@ -111,5 +111,12 @@ export const API_ENDPOINTS = {
                 `/admin/users/${userId}/role`,
         },
 
+        COUPON: {
+            ADMIN_LIST: "/coupon/admin",
+            ADMIN_DETAIL: (couponId: string) => `/coupon/admin/${couponId}`,
+            CREATE: "/coupon",
+            UPDATE: (couponId: string) => `/coupon/${couponId}`,
+            DELETE: (couponId: string) => `/coupon/${couponId}`,
+        },
     },
 } as const;

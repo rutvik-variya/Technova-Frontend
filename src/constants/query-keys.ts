@@ -89,4 +89,14 @@ export const QUERY_KEYS = {
         DETAIL: (userId: string) =>
             ["admin", "users", "detail", userId] as const,
     },
+
+
+    ADMIN_COUPONS: {
+        ALL: ["admin", "coupons"] as const,
+        LIST: (params?: { page?: number; limit?: number }) =>
+            ["admin", "coupons", "list", params] as const,
+        DETAIL: (couponId: string) =>
+            ["admin", "coupons", "detail", couponId] as const,
+    },
+
 } as const;

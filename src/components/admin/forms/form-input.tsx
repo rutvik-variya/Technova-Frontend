@@ -6,7 +6,8 @@ interface FormInputProps<T extends FieldValues> {
   register: UseFormRegister<T>;
   error?: string;
   placeholder?: string;
-  type?: "text" | "email" | "number";
+  type?: "text" | "email" | "number" | "date";
+  min?: string;
   required?: boolean;
   disabled?: boolean;
 }
@@ -18,6 +19,7 @@ export default function FormInput<T extends FieldValues>({
   error,
   placeholder,
   type = "text",
+  min,
   required = false,
   disabled = false,
 }: FormInputProps<T>) {
@@ -31,6 +33,7 @@ export default function FormInput<T extends FieldValues>({
       <input
         id={name}
         type={type}
+        min={min}
         placeholder={placeholder}
         disabled={disabled}
         aria-invalid={Boolean(error)}
