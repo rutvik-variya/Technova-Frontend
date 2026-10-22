@@ -99,4 +99,8 @@ export const QUERY_KEYS = {
             ["admin", "coupons", "detail", couponId] as const,
     },
 
+    ADMIN_SHIPPING: {
+        ALL: ["admin", "shipping"] as const,
+        LIST: ["admin", "shipping", "list"] as const,
+    },
 } as const;

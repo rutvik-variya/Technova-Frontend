@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   Boxes,
   FolderTree,
@@ -13,7 +13,10 @@ import {
   ShieldCheck,
   ChevronRight,
   Store,
+  LogOut,
+  Loader2,
 } from "lucide-react";
+import { useLogout } from "@/hooks/auth/use-logout";
 
 const adminNavigation = [
   { name: "Dashboard", href: "/admin", icon: LayoutDashboard },
@@ -27,17 +30,29 @@ const adminNavigation = [
 
 export default function AdminSidebar() {
   const pathname = usePathname();
+  const router = useRouter();
+  const logoutMutation = useLogout();
+
+  const handleLogout = async () => {
+    try {
+      await logoutMutation.mutateAsync();
+      router.replace("/login");
+      router.refresh();
+    } catch {
+      // Error handled by useLogout hook
+    }
+  };
 
   return (
     <aside className="sticky top-0 flex h-screen flex-col border-r border-slate-200/80 bg-white">
       {/* Brand Header */}
       <div className="flex h-20 items-center justify-between border-b border-slate-100 px-6">
         <Link href="/admin" className="flex items-center gap-2.5">
-          <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-slate-900 text-white font-black text-lg shadow-md shadow-slate-900/10">
+          <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-slate-900 text-lg font-black text-white shadow-md shadow-slate-900/10">
             T
           </div>
           <div className="flex flex-col">
-            <span className="text-xl font-extrabold tracking-tight text-slate-900 leading-tight">
+            <span className="text-xl font-extrabold leading-tight tracking-tight text-slate-900">
               Tech<span className="text-blue-600">Nova</span>
             </span>
           </div>
@@ -49,7 +64,7 @@ export default function AdminSidebar() {
       </div>
 
       {/* Navigation Section Label */}
-      <div className="px-6 pt-6 pb-2">
+      <div className="px-6 pb-2 pt-6">
         <p className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">
           Management Console
         </p>
@@ -100,8 +115,9 @@ export default function AdminSidebar() {
         })}
       </nav>
 
-      {/* Store Front Quick Link & Status */}
-      <div className="p-4 space-y-2 border-t border-slate-100">
+      {/* Footer / Quick Actions */}
+      <div className="space-y-2 border-t border-slate-100 p-4">
+        {/* View Storefront Link */}
         <Link
           href="/"
           target="_blank"
@@ -111,6 +127,27 @@ export default function AdminSidebar() {
           <span>View Storefront</span>
         </Link>
 
+        {/* Logout Button */}
+        <button
+          type="button"
+          onClick={handleLogout}
+          disabled={logoutMutation.isPending}
+          className="flex w-full items-center justify-center gap-2 rounded-2xl border border-rose-200/80 bg-rose-50/50 py-2.5 text-xs font-bold text-rose-600 transition hover:bg-rose-50 hover:text-rose-700 hover:border-rose-300 disabled:opacity-60 active:scale-[0.98]"
+        >
+          {logoutMutation.isPending ? (
+            <>
+              <Loader2 className="h-3.5 w-3.5 animate-spin text-rose-600" />
+              <span>Logging out...</span>
+            </>
+          ) : (
+            <>
+              <LogOut className="h-3.5 w-3.5 text-rose-500" />
+              <span>Logout</span>
+            </>
+          )}
+        </button>
+
+        {/* Store Status Card */}
         <div className="rounded-2xl border border-slate-100 bg-slate-50/80 p-3 text-center">
           <p className="text-[11px] font-bold text-slate-500">Store Status</p>
           <div className="mt-1 flex items-center justify-center gap-1.5 text-xs font-extrabold text-emerald-600">

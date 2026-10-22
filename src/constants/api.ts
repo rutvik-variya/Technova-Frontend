@@ -118,5 +118,11 @@ export const API_ENDPOINTS = {
             UPDATE: (couponId: string) => `/coupon/${couponId}`,
             DELETE: (couponId: string) => `/coupon/${couponId}`,
         },
+
+        ADMIN_SHIPPING: {
+            LIST: "/admin/shipping",
+            UPDATE: (method: "STANDARD" | "EXPRESS") =>
+                `/admin/shipping/${method}`,
+        },
     },
 } as const;

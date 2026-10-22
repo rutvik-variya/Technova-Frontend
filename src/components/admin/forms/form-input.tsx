@@ -42,7 +42,10 @@ export default function FormInput<T extends FieldValues>({
             ? "border-rose-300 focus:border-rose-500 focus:ring-1 focus:ring-rose-500"
             : "border-slate-200 focus:border-slate-900 focus:ring-1 focus:ring-slate-900"
         }`}
-        {...register(name)}
+        {...register(
+          name,
+          type === "number" ? { valueAsNumber: true } : undefined,
+        )}
       />
 
       {error && (
