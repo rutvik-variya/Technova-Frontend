@@ -14,14 +14,17 @@ import { ROUTES } from "@/constants/routes";
 import { useCurrentUser } from "@/hooks/auth/use-current-user";
 import { useWishlistCount } from "../../hooks/wishlist/use-wishlist-count";
 import { useCartCount } from "@/hooks/cart/use-cart-count";
+import { useUIStore } from "@/store/ui.store"; // 1. Import your UI store
 
 export default function Header() {
   const { data } = useCurrentUser();
   const user = data?.data;
 
   const cartCount = useCartCount();
-
   const { count: wishlistCount } = useWishlistCount();
+
+  const setMobileMenuOpen = useUIStore((state) => state.setMobileMenuOpen);
+
   return (
     <header className="sticky top-0 z-50 bg-white shadow-sm border-b border-gray-100">
       {/* Top Announcement Bar */}
@@ -30,8 +33,8 @@ export default function Header() {
           <div className="flex items-center gap-2">
             <Sparkles className="h-3.5 w-3.5 text-amber-400" />
             <span>
-              Get 10% OFF on your first tech order! Code:{" "}
-              <strong>TECH10</strong>
+              Get 20% OFF on your first tech order! Code:{" "}
+              <strong>SAVE20</strong>
             </span>
           </div>
 
@@ -103,9 +106,9 @@ export default function Header() {
               className="relative flex items-center gap-2 rounded-full bg-blue-50 px-3.5 py-2 text-blue-600 transition hover:bg-blue-100"
             >
               <ShoppingBag className="h-5 w-5" />
-
-              <span className="text-sm font-semibold">Cart</span>
-
+              <span className="hidden sm:inline text-sm font-semibold">
+                Cart
+              </span>
               <span className="flex h-5 w-5 items-center justify-center rounded-full bg-blue-600 text-xs font-bold text-white">
                 {cartCount}
               </span>
@@ -125,16 +128,17 @@ export default function Header() {
             ) : (
               <Link
                 href={ROUTES.PROFILE}
-                className="text-slate-700 transition hover:text-blue-600"
+                className="hidden sm:block text-slate-700 transition hover:text-blue-600"
               >
                 <User className="h-7 w-7" />
               </Link>
             )}
 
-            {/* Mobile Menu */}
+            {/* Mobile Menu Button - 3. Added onClick handler */}
             <button
               type="button"
-              className="p-2 text-slate-700 md:hidden"
+              onClick={() => setMobileMenuOpen(true)}
+              className="p-2 text-slate-700 md:hidden transition hover:text-blue-600"
               aria-label="Open menu"
             >
               <Menu className="h-6 w-6" />

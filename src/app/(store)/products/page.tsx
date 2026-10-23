@@ -30,7 +30,7 @@ export default function ProductsPage() {
 
   const { data, isLoading, isError } = useProducts({
     page,
-    limit: 5,
+    limit: 10,
     search,
     categoryId,
     brand,
