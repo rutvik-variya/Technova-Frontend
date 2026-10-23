@@ -84,106 +84,111 @@ export default function AdminProductForm({
   }));
 
   return (
-    <form
-      onSubmit={handleSubmit(submitHandler)}
-      noValidate
-      className="space-y-6 rounded-3xl border border-slate-200/80 bg-white p-6 shadow-xs sm:p-8"
-    >
-      <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
-        <div className="md:col-span-2">
+    <div className="space-y-6 rounded-3xl border border-slate-200/80 bg-white p-6 shadow-xs sm:p-8">
+      <form
+        id="admin-product-form"
+        onSubmit={handleSubmit(submitHandler)}
+        noValidate
+        className="space-y-6"
+      >
+        <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+          <div className="md:col-span-2">
+            <FormInput<AdminProductFormValues>
+              name="name"
+              label="Product Name"
+              register={register}
+              error={errors.name?.message}
+              placeholder="Enter full product name"
+              required
+              disabled={isSubmitting}
+            />
+          </div>
+
           <FormInput<AdminProductFormValues>
-            name="name"
-            label="Product Name"
+            name="brand"
+            label="Brand"
             register={register}
-            error={errors.name?.message}
-            placeholder="Enter full product name"
+            error={errors.brand?.message}
+            placeholder="e.g. Apple, Samsung, Sony"
             required
             disabled={isSubmitting}
           />
-        </div>
 
-        <FormInput<AdminProductFormValues>
-          name="brand"
-          label="Brand"
-          register={register}
-          error={errors.brand?.message}
-          placeholder="e.g. Apple, Samsung, Sony"
-          required
-          disabled={isSubmitting}
-        />
+          <FormSelect<AdminProductFormValues>
+            name="categoryId"
+            label="Category"
+            register={register}
+            options={categoryOptions}
+            error={errors.categoryId?.message}
+            placeholder="Select a category"
+            required
+            disabled={isSubmitting || categories.length === 0}
+          />
 
-        <FormSelect<AdminProductFormValues>
-          name="categoryId"
-          label="Category"
-          register={register}
-          options={categoryOptions}
-          error={errors.categoryId?.message}
-          placeholder="Select a category"
-          required
-          disabled={isSubmitting || categories.length === 0}
-        />
+          <FormSelect<AdminProductFormValues>
+            name="status"
+            label="Publication Status"
+            register={register}
+            options={[
+              { label: "Draft", value: "DRAFT" },
+              { label: "Active", value: "ACTIVE" },
+            ]}
+            error={errors.status?.message}
+            required
+            disabled={isSubmitting}
+          />
 
-        <FormSelect<AdminProductFormValues>
-          name="status"
-          label="Publication Status"
-          register={register}
-          options={[
-            { label: "Draft", value: "DRAFT" },
-            { label: "Active", value: "ACTIVE" },
-          ]}
-          error={errors.status?.message}
-          required
-          disabled={isSubmitting}
-        />
-
-        <FormTextarea<AdminProductFormValues>
-          name="shortDescription"
-          label="Short Description"
-          register={register}
-          error={errors.shortDescription?.message}
-          placeholder="Brief overview summary for product cards"
-          rows={3}
-          required
-          disabled={isSubmitting}
-        />
-
-        <div className="md:col-span-2">
           <FormTextarea<AdminProductFormValues>
-            name="description"
-            label="Full Description"
+            name="shortDescription"
+            label="Short Description"
             register={register}
-            error={errors.description?.message}
-            placeholder="Enter complete technical specifications and details"
-            rows={6}
+            error={errors.shortDescription?.message}
+            placeholder="Brief overview summary for product cards"
+            rows={3}
             required
             disabled={isSubmitting}
           />
-        </div>
-      </div>
 
-      {categories.length === 0 && (
-        <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-xs font-semibold text-amber-800">
-          No categories found. Create a category before publishing new products.
+          <div className="md:col-span-2">
+            <FormTextarea<AdminProductFormValues>
+              name="description"
+              label="Full Description"
+              register={register}
+              error={errors.description?.message}
+              placeholder="Enter complete technical specifications and details"
+              rows={6}
+              required
+              disabled={isSubmitting}
+            />
+          </div>
         </div>
-      )}
+
+        {categories.length === 0 && (
+          <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-xs font-semibold text-amber-800">
+            No categories found. Create a category before publishing new products.
+          </div>
+        )}
+
+        {submitError && (
+          <div
+            role="alert"
+            className="flex items-center gap-2 rounded-2xl border border-rose-200 bg-rose-50/70 p-4 text-xs font-semibold text-rose-700"
+          >
+            <AlertCircle className="h-4 w-4 shrink-0 text-rose-600" />
+            <span>{submitError}</span>
+          </div>
+        )}
+      </form>
 
       {extraSection}
-
-      {submitError && (
-        <div
-          role="alert"
-          className="flex items-center gap-2 rounded-2xl border border-rose-200 bg-rose-50/70 p-4 text-xs font-semibold text-rose-700"
-        >
-          <AlertCircle className="h-4 w-4 shrink-0 text-rose-600" />
-          <span>{submitError}</span>
-        </div>
-      )}
 
       <FormActions
         submitLabel={initialProduct ? "Save Changes" : "Create Product"}
         isSubmitting={isSubmitting}
         cancelHref="/admin/products"
+        canSubmit={canSubmit}
+        formId="admin-product-form"
       />
-    </form>
+    </div>
   );
 }

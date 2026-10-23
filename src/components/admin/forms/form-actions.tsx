@@ -5,12 +5,16 @@ interface FormActionsProps {
   submitLabel: string;
   isSubmitting: boolean;
   cancelHref: string;
+  canSubmit?: boolean;
+  formId?: string;
 }
 
 export default function FormActions({
   submitLabel,
   isSubmitting,
   cancelHref,
+  canSubmit = true,
+  formId,
 }: FormActionsProps) {
   return (
     <div className="flex flex-col-reverse gap-3 border-t border-slate-100 pt-5 sm:flex-row sm:justify-end">
@@ -23,7 +27,8 @@ export default function FormActions({
 
       <button
         type="submit"
-        disabled={isSubmitting}
+        form={formId}
+        disabled={isSubmitting || !canSubmit}
         className="inline-flex items-center justify-center gap-2 rounded-2xl bg-blue-600 px-6 py-2.5 text-xs font-bold text-white shadow-lg shadow-blue-600/20 transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60 active:scale-[0.98]"
       >
         {isSubmitting ? (

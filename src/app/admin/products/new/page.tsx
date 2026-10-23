@@ -2,17 +2,21 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Boxes, CheckCircle2, ArrowRight } from "lucide-react";
+import Link from "next/link";
+import { toast } from "sonner";
+import { AlertCircle, Boxes, ArrowRight } from "lucide-react";
 
 import AdminProductForm from "@/components/admin/products/admin-product-form";
-import ProductImageManager from "@/components/admin/products/product-image-manager";
-import ProductVariantManager from "@/components/admin/products/product-variant-manager";
+import ProductDraftAssets from "@/components/admin/products/product-draft-assets";
 
 import { useCreateAdminProduct } from "@/hooks/admin/products/use-create-admin-product";
+import { useUploadProductImages } from "@/hooks/admin/products/use-upload-product-images";
+import { useCreateProductVariant } from "@/hooks/admin/products/use-create-product-variant";
 import { useCategories } from "@/hooks/categories/use-categories";
 
-import type { AdminProduct } from "@/types/admin-product";
+import type { AdminProduct, CreateVariantPayload } from "@/types/admin-product";
 import type { AdminProductFormValues } from "@/validations/admin-product.schema";
+import { getApiError } from "@/lib/api-error";
 
 export default function NewAdminProductPage() {
   const router = useRouter();
@@ -20,13 +24,25 @@ export default function NewAdminProductPage() {
   const [createdProduct, setCreatedProduct] = useState<AdminProduct | null>(
     null,
   );
+  const [images, setImages] = useState<File[]>([]);
+  const [variants, setVariants] = useState<CreateVariantPayload[]>([]);
+  const [creationError, setCreationError] = useState<string | null>(null);
+  const [isSettingUp, setIsSettingUp] = useState(false);
 
   const categoriesQuery = useCategories();
   const createProduct = useCreateAdminProduct();
+  const uploadImages = useUploadProductImages();
+  const createVariant = useCreateProductVariant();
 
   const categories = categoriesQuery.data?.data ?? [];
 
   const handleSubmit = async (values: AdminProductFormValues) => {
+    if (!images.length || !variants.length) return;
+
+    setCreationError(null);
+    setIsSettingUp(true);
+    let productWasCreated = false;
+
     try {
       const product = await createProduct.mutateAsync(values);
 
@@ -36,9 +52,32 @@ export default function NewAdminProductPage() {
         );
       }
 
+      productWasCreated = true;
       setCreatedProduct(product);
+      await uploadImages.mutateAsync({
+        productId: product.id,
+        files: images,
+        showToasts: false,
+      });
+      for (const payload of variants) {
+        await createVariant.mutateAsync({
+          productId: product.id,
+          payload,
+          showToasts: false,
+        });
+      }
+
+      toast.success("Product created with images and variants.");
+      router.push("/admin/products");
     } catch (error) {
-      console.error("Create product failed:", error);
+      const message = getApiError(error).message;
+      const errorMessage = productWasCreated
+        ? `The product was created, but its images or variants could not all be saved. ${message}`
+        : message;
+      setCreationError(errorMessage);
+      if (!productWasCreated) toast.error(errorMessage);
+    } finally {
+      setIsSettingUp(false);
     }
   };
 
@@ -70,48 +109,56 @@ export default function NewAdminProductPage() {
         </p>
       </div>
 
-      {!createdProduct ? (
-        <AdminProductForm
-          categories={categories}
-          isSubmitting={createProduct.isPending}
-          onSubmit={handleSubmit}
-        />
-      ) : (
-        <div className="space-y-8">
-          <div className="flex items-center gap-3 rounded-2xl border border-emerald-200 bg-emerald-50/70 p-4 text-emerald-800 shadow-xs">
-            <CheckCircle2 className="h-5 w-5 shrink-0 text-emerald-600" />
+      {createdProduct && creationError ? (
+        <div
+          role="alert"
+          className="space-y-4 rounded-3xl border border-rose-200 bg-rose-50/70 p-6"
+        >
+          <div className="flex items-start gap-3 text-rose-800">
+            <AlertCircle className="mt-0.5 h-5 w-5 shrink-0" />
             <div>
-              <p className="text-xs font-extrabold">
-                Product Created: {createdProduct.name}
-              </p>
-              <p className="mt-0.5 text-xs font-medium text-emerald-700">
-                Next, add images and configure variants below.
-              </p>
+              <h2 className="text-sm font-extrabold">
+                Product created, but setup was incomplete
+              </h2>
+              <p className="mt-1 text-xs font-medium">{creationError}</p>
             </div>
           </div>
-
-          <ProductImageManager
-            productId={createdProduct.id}
-            images={createdProduct.productImages ?? []}
-          />
-
-          <ProductVariantManager
-            productId={createdProduct.id}
-            productSlug={createdProduct.slug}
-            variants={createdProduct.productVariants ?? []}
-          />
-
-          <div className="flex justify-end pt-4">
-            <button
-              type="button"
-              onClick={() => router.push("/admin/products")}
-              className="inline-flex items-center gap-2 rounded-2xl bg-blue-600 px-6 py-3 text-sm font-bold text-white shadow-lg shadow-blue-600/20 transition hover:bg-blue-700 active:scale-[0.98]"
-            >
-              <span>Done — Back to Products</span>
-              <ArrowRight className="h-4 w-4" />
-            </button>
-          </div>
+          <Link
+            href={`/admin/products/${createdProduct.id}/edit`}
+            className="inline-flex items-center gap-2 rounded-2xl bg-slate-900 px-5 py-2.5 text-xs font-bold text-white hover:bg-slate-800"
+          >
+            Continue setup in Edit Product
+            <ArrowRight className="h-4 w-4" />
+          </Link>
         </div>
+      ) : (
+        <AdminProductForm
+          categories={categories}
+          isSubmitting={isSettingUp || createProduct.isPending}
+          onSubmit={handleSubmit}
+          canSubmit={images.length > 0 && variants.length > 0}
+          extraSection={
+            <>
+              <ProductDraftAssets
+                images={images}
+                onImagesChange={setImages}
+                variants={variants}
+                onVariantsChange={setVariants}
+              />
+              {creationError && (
+                <p role="alert" className="text-xs font-semibold text-rose-700">
+                  {creationError}
+                </p>
+              )}
+            </>
+          }
+        />
+      )}
+
+      {createdProduct && !creationError && isSettingUp && (
+        <p className="text-xs font-medium text-slate-500">
+          Saving images and variants for {createdProduct.name}...
+        </p>
       )}
     </main>
   );

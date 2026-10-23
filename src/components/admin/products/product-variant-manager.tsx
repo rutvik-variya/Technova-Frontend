@@ -2,9 +2,15 @@
 
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Layers, Pencil, Trash2, Loader2 } from "lucide-react";
+import {
+  AlertTriangle,
+  Layers,
+  Pencil,
+  Trash2,
+  Loader2,
+  X,
+} from "lucide-react";
 
 import type {
   ProductVariant,
@@ -14,24 +20,11 @@ import type {
 import { useCreateProductVariant } from "@/hooks/admin/products/use-create-product-variant";
 import { useUpdateProductVariant } from "@/hooks/admin/products/use-update-product-variant";
 import { useDeleteProductVariant } from "@/hooks/admin/products/use-delete-product-variant";
-
-const variantSchema = z.object({
-  sku: z.string().trim().min(1, "SKU is required"),
-  ram: z.string().optional(),
-  storage: z.string().optional(),
-  color: z.string().optional(),
-  price: z.coerce.number().positive("Price must be greater than zero"),
-  comparePrice: z
-    .union([
-      z.literal(""),
-      z.coerce.number().positive("Compare price must be greater than zero"),
-    ])
-    .optional(),
-  stock: z.coerce.number().int().min(0, "Stock cannot be negative"),
-});
-
-type VariantFormInput = z.input<typeof variantSchema>;
-type VariantFormValues = z.output<typeof variantSchema>;
+import {
+  adminProductVariantSchema,
+  type AdminProductVariantFormInput,
+  type AdminProductVariantFormValues,
+} from "@/validations/admin-product-variant.schema";
 
 interface ProductVariantManagerProps {
   productId: string;
@@ -39,7 +32,7 @@ interface ProductVariantManagerProps {
   variants: ProductVariant[];
 }
 
-const emptyValues: VariantFormValues = {
+const emptyValues: AdminProductVariantFormValues = {
   sku: "",
   ram: "",
   storage: "",
@@ -55,13 +48,23 @@ export default function ProductVariantManager({
   variants,
 }: ProductVariantManagerProps) {
   const [editingVariantId, setEditingVariantId] = useState<string | null>(null);
+  const [variantToDelete, setVariantToDelete] = useState<ProductVariant | null>(
+    null,
+  );
+  const activeVariants = variants.filter(
+    (variant) => variant.isActive && !variant.deletedAt,
+  );
 
   const createMutation = useCreateProductVariant();
   const updateMutation = useUpdateProductVariant();
   const deleteMutation = useDeleteProductVariant();
 
-  const form = useForm<VariantFormInput, unknown, VariantFormValues>({
-    resolver: zodResolver(variantSchema),
+  const form = useForm<
+    AdminProductVariantFormInput,
+    unknown,
+    AdminProductVariantFormValues
+  >({
+    resolver: zodResolver(adminProductVariantSchema),
     defaultValues: emptyValues,
   });
 
@@ -85,7 +88,7 @@ export default function ProductVariantManager({
     });
   };
 
-  const onSubmit = (values: VariantFormValues) => {
+  const onSubmit = (values: AdminProductVariantFormValues) => {
     const payload: CreateVariantPayload = {
       sku: values.sku.trim(),
       ram: values.ram?.trim() || undefined,
@@ -101,17 +104,32 @@ export default function ProductVariantManager({
 
     if (editingVariantId) {
       updateMutation.mutate(
-        { productId, variantId: editingVariantId, payload },
+        {
+          productId,
+          productQueryKey: productSlug,
+          variantId: editingVariantId,
+          payload,
+        },
         { onSuccess: resetForm },
       );
     } else {
-      createMutation.mutate({ productId, payload }, { onSuccess: resetForm });
+      createMutation.mutate(
+        { productId, productQueryKey: productSlug, payload },
+        { onSuccess: resetForm },
+      );
     }
   };
 
   const handleDelete = (variant: ProductVariant) => {
-    if (!window.confirm(`Delete variant ${variant.sku}?`)) return;
-    deleteMutation.mutate({ productId, productSlug, variantId: variant.id });
+    setVariantToDelete(variant);
+  };
+
+  const confirmDelete = () => {
+    if (!variantToDelete) return;
+    deleteMutation.mutate(
+      { productId, productSlug, variantId: variantToDelete.id },
+      { onSuccess: () => setVariantToDelete(null) },
+    );
   };
 
   const fields = [
@@ -212,7 +230,7 @@ export default function ProductVariantManager({
             </thead>
 
             <tbody className="divide-y divide-slate-100 font-medium text-slate-600">
-              {variants.map((variant) => (
+              {activeVariants.map((variant) => (
                 <tr
                   key={variant.id}
                   className="transition-colors hover:bg-slate-50/80"
@@ -269,7 +287,7 @@ export default function ProductVariantManager({
                 </tr>
               ))}
 
-              {variants.length === 0 && (
+              {activeVariants.length === 0 && (
                 <tr>
                   <td
                     colSpan={5}
@@ -284,6 +302,83 @@ export default function ProductVariantManager({
           </table>
         </div>
       </div>
+
+      {variantToDelete && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="delete-variant-title"
+        >
+          <button
+            type="button"
+            aria-label="Close delete variant dialog"
+            disabled={deleteMutation.isPending}
+            onClick={() => setVariantToDelete(null)}
+            className="fixed inset-0 bg-slate-900/40 backdrop-blur-xs transition-opacity animate-in fade-in duration-200 disabled:cursor-not-allowed"
+          />
+
+          <div className="relative w-full max-w-md overflow-hidden rounded-3xl border border-slate-200/80 bg-white p-6 shadow-2xl transition-all animate-in zoom-in-95 duration-200">
+            <button
+              type="button"
+              aria-label="Close"
+              onClick={() => setVariantToDelete(null)}
+              disabled={deleteMutation.isPending}
+              className="absolute right-4 top-4 rounded-xl p-1 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600 disabled:opacity-50"
+            >
+              <X className="h-5 w-5" />
+            </button>
+
+            <div className="flex flex-col items-center text-center">
+              <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl border border-rose-100 bg-rose-50 text-rose-600 shadow-xs">
+                <AlertTriangle className="h-7 w-7" />
+              </div>
+
+              <h3
+                id="delete-variant-title"
+                className="text-lg font-bold text-slate-900"
+              >
+                Delete Product Variant
+              </h3>
+
+              <p className="mt-2 text-xs leading-relaxed text-slate-500">
+                Are you sure you want to permanently delete variant{" "}
+                <strong className="text-slate-900">
+                  {variantToDelete.sku}
+                </strong>
+                ?
+              </p>
+
+              <div className="mt-6 flex w-full flex-col-reverse gap-2.5 sm:flex-row sm:items-center">
+                <button
+                  type="button"
+                  onClick={() => setVariantToDelete(null)}
+                  disabled={deleteMutation.isPending}
+                  className="inline-flex h-11 w-full items-center justify-center rounded-2xl border border-slate-200/80 bg-white px-4 text-xs font-bold text-slate-700 shadow-xs transition hover:bg-slate-50 active:scale-[0.98] disabled:opacity-50 sm:w-1/2"
+                >
+                  Cancel
+                </button>
+
+                <button
+                  type="button"
+                  onClick={confirmDelete}
+                  disabled={deleteMutation.isPending}
+                  className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-2xl bg-rose-600 px-4 text-xs font-bold text-white shadow-md shadow-rose-600/20 transition hover:bg-rose-700 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60 sm:w-1/2"
+                >
+                  {deleteMutation.isPending ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      <span>Deleting...</span>
+                    </>
+                  ) : (
+                    <span>Confirm Delete</span>
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   );
 }

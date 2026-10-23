@@ -56,6 +56,7 @@ export default function EditAdminProductPage({
     updateProduct.mutate(
       {
         id: adminProduct.id,
+        productQueryKey: slug,
         payload: values,
       },
       {
@@ -191,21 +192,22 @@ export default function EditAdminProductPage({
         isSubmitting={updateProduct.isPending}
         submitError={submitError}
         onSubmit={handleSubmit}
+        extraSection={
+          <div className="space-y-8 pt-2">
+            <ProductImageManager
+              productId={adminProduct.id}
+              productQueryKey={slug}
+              images={adminProduct.productImages ?? []}
+            />
+
+            <ProductVariantManager
+              productId={adminProduct.id}
+              productSlug={slug}
+              variants={adminProduct.productVariants ?? []}
+            />
+          </div>
+        }
       />
-
-      {/* Image and Variant Managers */}
-      <div className="space-y-8 pt-2">
-        <ProductImageManager
-          productId={adminProduct.id}
-          images={adminProduct.productImages ?? []}
-        />
-
-        <ProductVariantManager
-          productId={adminProduct.id}
-          productSlug={slug}
-          variants={adminProduct.productVariants ?? []}
-        />
-      </div>
     </main>
   );
 }
