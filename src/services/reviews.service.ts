@@ -4,7 +4,6 @@ import {
     getRequest,
     patchRequest,
     postRequest,
-    putRequest,
 } from "@/lib/api-request";
 
 import {

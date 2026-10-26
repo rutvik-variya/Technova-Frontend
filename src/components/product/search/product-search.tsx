@@ -2,7 +2,7 @@
 
 import { Search, X } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 export default function ProductSearch() {
   const router = useRouter();
@@ -11,48 +11,65 @@ export default function ProductSearch() {
 
   const [value, setValue] = useState(searchParams.get("search") ?? "");
 
-  const handleSearch = (searchValue = value) => {
-    const params = new URLSearchParams(searchParams.toString());
+  const handleSearch = useCallback(
+    (searchValue = value) => {
+      const params = new URLSearchParams(searchParams.toString());
 
-    if (searchValue.trim()) {
-      params.set("search", searchValue.trim());
-    } else {
-      params.delete("search");
-    }
+      if (searchValue.trim()) {
+        params.set("search", searchValue.trim());
+      } else {
+        params.delete("search");
+      }
 
-    params.set("page", "1");
-    router.push(`${pathname}?${params.toString()}`);
-  };
+      params.set("page", "1");
+      router.push(`${pathname}?${params.toString()}`);
+    },
+    [value, searchParams, router, pathname],
+  );
 
-  const handleClear = () => {
+  const handleClear = useCallback(() => {
     setValue("");
+
     const params = new URLSearchParams(searchParams.toString());
     params.delete("search");
     params.set("page", "1");
+
     router.push(`${pathname}?${params.toString()}`);
-  };
+  }, [searchParams, router, pathname]);
 
   useEffect(() => {
     const timeout = setTimeout(() => {
       const currentSearch = searchParams.get("search") ?? "";
+
       if (value.trim() === currentSearch) return;
+
       handleSearch(value);
     }, 400);
 
     return () => clearTimeout(timeout);
-  }, [value]);
+  }, [value, searchParams, handleSearch]);
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      setValue(searchParams.get("search") ?? "");
+    }, 0);
+
+    return () => clearTimeout(timeout);
+  }, [searchParams]);
 
   return (
     <div className="relative flex w-full items-center">
       <div className="relative flex-1">
         <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+
         <input
           type="text"
           value={value}
-          onChange={(e) => setValue(e.target.value)}
+          onChange={(event) => setValue(event.target.value)}
           placeholder="Search products, models, or specs..."
           className="w-full rounded-2xl border border-slate-200 bg-slate-50/50 py-3 pl-10 pr-10 text-sm font-medium text-slate-900 placeholder-slate-400 transition hover:bg-slate-100/50 focus:border-indigo-500 focus:bg-white focus:outline-none focus:ring-4 focus:ring-indigo-500/10"
         />
+
         {value && (
           <button
             type="button"

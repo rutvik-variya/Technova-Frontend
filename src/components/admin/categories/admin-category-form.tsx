@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { useForm, useWatch, type SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ImageIcon, AlertCircle } from "lucide-react";
+import { AlertCircle } from "lucide-react";
 
 import FormInput from "@/components/admin/forms/form-input";
 import FormTextarea from "@/components/admin/forms/form-textarea";

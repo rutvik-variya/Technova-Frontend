@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, Calendar, CreditCard, ShoppingBag } from "lucide-react";
+import { ArrowRight, CreditCard, ShoppingBag } from "lucide-react";
 import type { OrderListItem } from "@/types/order";
 
 interface OrderCardProps {

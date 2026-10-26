@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { Heart, ShoppingBag, Trash2, ArrowRight, Info } from "lucide-react";
+import { Heart, ShoppingBag, Trash2, ArrowRight } from "lucide-react";
 
 import { ROUTES } from "@/constants/routes";
 import { useWishlistStore } from "@/store/wishlist.store";
