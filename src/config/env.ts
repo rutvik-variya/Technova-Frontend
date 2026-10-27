@@ -4,7 +4,7 @@ if (!apiUrl) {
     throw new Error("NEXT_PUBLIC_API_URL is not defined");
 }
 
-export const env ={
-    apiUrl,
+export const env = {
+    apiUrl: "/api",
 } as const;
 
