@@ -73,6 +73,7 @@ export default function ProductInfo({ product }: ProductInfoProps) {
         ram: selectedVariant.ram ?? null,
         storage: selectedVariant.storage ?? null,
         color: selectedVariant.color ?? null,
+        attributes: selectedVariant.attributes ?? null,
         price: String(selectedVariant.price ?? 0),
         comparePrice: String(selectedVariant.price ?? 0),
         stock,
@@ -159,7 +160,7 @@ export default function ProductInfo({ product }: ProductInfoProps) {
 
         <ProductVariants
           variants={variants}
-          selectedVariant={selectedVariant ?? variants[0]!}
+          selectedVariant={selectedVariant}
           onChange={handleVariantChange}
         />
 

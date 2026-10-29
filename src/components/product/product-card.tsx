@@ -93,6 +93,7 @@ export function ProductCard({ product }: ProductCardProps) {
           ram: availableVariant.ram ?? null,
           storage: availableVariant.storage ?? null,
           color: availableVariant.color ?? null,
+          attributes: availableVariant.attributes ?? null,
           price: String(availableVariant.price ?? 0),
           comparePrice: "0",
           stock,

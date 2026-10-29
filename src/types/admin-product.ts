@@ -21,6 +21,7 @@ export interface ProductVariant {
     ram: string | null;
     storage: string | null;
     color: string | null;
+    attributes?: Record<string, string> | null;
     price: string | number;
     comparePrice: string | number | null;
     stock: number;
@@ -87,6 +88,7 @@ export interface CreateVariantPayload {
     ram?: string;
     storage?: string;
     color?: string;
+    attributes?: Record<string, string>;
     price: number; // Must be a number, not a string
     comparePrice?: number;
     stock: number;

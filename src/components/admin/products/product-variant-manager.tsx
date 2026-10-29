@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { useFieldArray, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   AlertTriangle,
@@ -16,6 +16,7 @@ import type {
   ProductVariant,
   CreateVariantPayload,
 } from "@/types/admin-product";
+import { getProductVariantAttributes } from "@/utils/product-variant";
 
 import { useCreateProductVariant } from "@/hooks/admin/products/use-create-product-variant";
 import { useUpdateProductVariant } from "@/hooks/admin/products/use-update-product-variant";
@@ -34,9 +35,7 @@ interface ProductVariantManagerProps {
 
 const emptyValues: AdminProductVariantFormValues = {
   sku: "",
-  ram: "",
-  storage: "",
-  color: "",
+  options: [],
   price: 0,
   comparePrice: "",
   stock: 0,
@@ -67,6 +66,10 @@ export default function ProductVariantManager({
     resolver: zodResolver(adminProductVariantSchema),
     defaultValues: emptyValues,
   });
+  const optionFields = useFieldArray({
+    control: form.control,
+    name: "options",
+  });
 
   const isSaving = createMutation.isPending || updateMutation.isPending;
 
@@ -79,9 +82,9 @@ export default function ProductVariantManager({
     setEditingVariantId(variant.id);
     form.reset({
       sku: variant.sku,
-      ram: variant.ram ?? "",
-      storage: variant.storage ?? "",
-      color: variant.color ?? "",
+      options: Object.entries(getProductVariantAttributes(variant)).map(
+        ([name, value]) => ({ name, value }),
+      ),
       price: Number(variant.price),
       comparePrice: "",
       stock: variant.stock,
@@ -89,11 +92,15 @@ export default function ProductVariantManager({
   };
 
   const onSubmit = (values: AdminProductVariantFormValues) => {
+    const attributes = Object.fromEntries(
+      values.options
+        .filter((option) => option.name && option.value)
+        .map((option) => [option.name, option.value]),
+    );
+
     const payload: CreateVariantPayload = {
       sku: values.sku.trim(),
-      ram: values.ram?.trim() || undefined,
-      storage: values.storage?.trim() || undefined,
-      color: values.color?.trim() || undefined,
+      attributes,
       price: values.price,
       comparePrice:
         values.comparePrice === "" || values.comparePrice === undefined
@@ -134,9 +141,6 @@ export default function ProductVariantManager({
 
   const fields = [
     { name: "sku", label: "SKU", type: "text" },
-    { name: "ram", label: "RAM", type: "text" },
-    { name: "storage", label: "Storage", type: "text" },
-    { name: "color", label: "Color", type: "text" },
     { name: "price", label: "Price (₹)", type: "number" },
     { name: "comparePrice", label: "Compare Price (₹)", type: "number" },
     { name: "stock", label: "Stock Quantity", type: "number" },
@@ -181,6 +185,79 @@ export default function ProductVariantManager({
                   {form.formState.errors[field.name]?.message}
                 </p>
               )}
+            </div>
+          ))}
+        </div>
+
+        <div className="space-y-3">
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <h3 className="text-xs font-bold text-slate-700">
+                Custom options
+              </h3>
+              <p className="mt-0.5 text-xs text-slate-500">
+                Add only the attributes that apply to this product.
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => optionFields.append({ name: "", value: "" })}
+              className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-700 hover:bg-slate-50"
+            >
+              Add Option
+            </button>
+          </div>
+          {optionFields.fields.map((field, index) => (
+            <div
+              key={field.id}
+              className="grid gap-3 sm:grid-cols-[1fr_1fr_auto]"
+            >
+              <div>
+                <label
+                  htmlFor={`variant-option-name-${index}`}
+                  className="mb-1.5 block text-xs font-bold text-slate-700"
+                >
+                  Option name
+                </label>
+                <input
+                  id={`variant-option-name-${index}`}
+                  placeholder="e.g. Size"
+                  {...form.register(`options.${index}.name`)}
+                  className="w-full rounded-2xl border border-slate-200 bg-white px-3.5 py-2.5 text-xs text-slate-900 outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900"
+                />
+                {form.formState.errors.options?.[index]?.name && (
+                  <p className="mt-1 text-xs font-semibold text-rose-600">
+                    {form.formState.errors.options[index]?.name?.message}
+                  </p>
+                )}
+              </div>
+              <div>
+                <label
+                  htmlFor={`variant-option-value-${index}`}
+                  className="mb-1.5 block text-xs font-bold text-slate-700"
+                >
+                  Value
+                </label>
+                <input
+                  id={`variant-option-value-${index}`}
+                  placeholder="e.g. Large"
+                  {...form.register(`options.${index}.value`)}
+                  className="w-full rounded-2xl border border-slate-200 bg-white px-3.5 py-2.5 text-xs text-slate-900 outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900"
+                />
+                {form.formState.errors.options?.[index]?.value && (
+                  <p className="mt-1 text-xs font-semibold text-rose-600">
+                    {form.formState.errors.options[index]?.value?.message}
+                  </p>
+                )}
+              </div>
+              <button
+                type="button"
+                aria-label={`Remove option ${index + 1}`}
+                onClick={() => optionFields.remove(index)}
+                className="self-end rounded-xl border border-slate-200 p-2.5 text-rose-600 hover:bg-rose-50"
+              >
+                <Trash2 className="h-4 w-4" />
+              </button>
             </div>
           ))}
         </div>
@@ -242,8 +319,8 @@ export default function ProductVariantManager({
                   </td>
 
                   <td className="px-5 py-3.5 text-slate-600">
-                    {[variant.ram, variant.storage, variant.color]
-                      .filter(Boolean)
+                    {Object.entries(getProductVariantAttributes(variant))
+                      .map(([name, value]) => `${name}: ${value}`)
                       .join(" / ") || "—"}
                   </td>
 

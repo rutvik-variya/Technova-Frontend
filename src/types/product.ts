@@ -14,6 +14,7 @@ export interface ProductVariant {
     ram?: string;
     storage?: string;
     color?: string;
+    attributes?: Record<string, string> | null;
     price?: number;
     stock?: number;
     isActive?: boolean;
@@ -41,4 +42,3 @@ export interface Product {
     productVariants?: ProductVariant[];
     category?: ProductCategory
 }
-

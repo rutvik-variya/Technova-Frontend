@@ -5,6 +5,7 @@ import { Trash2 } from "lucide-react";
 
 import { ROUTES } from "@/constants/routes";
 import type { CartItem } from "@/types/cart";
+import { getProductVariantAttributes } from "@/utils/product-variant";
 
 import { CartItemQuantity } from "./cart-item-quantity";
 import { useRemoveCartItem } from "@/hooks/cart/use-remove-cart-item";
@@ -22,6 +23,7 @@ export function CartItemDetails({ item }: CartItemDetailsProps) {
   const isAuthenticated = Boolean(currentUserResponse?.data);
 
   const { product, variant } = item;
+  const attributes = getProductVariantAttributes(variant);
 
   const productPrice = Number(item.priceAtAdded);
 
@@ -58,23 +60,14 @@ export function CartItemDetails({ item }: CartItemDetailsProps) {
         </div>
 
         <div className="mt-2 flex flex-wrap gap-1.5">
-          {variant.ram && (
-            <span className="rounded-lg border border-slate-200 bg-slate-50 px-2 py-0.5 text-[11px] font-semibold text-slate-600">
-              RAM: {variant.ram}
+          {Object.entries(attributes).map(([name, value]) => (
+            <span
+              key={name}
+              className="rounded-lg border border-slate-200 bg-slate-50 px-2 py-0.5 text-[11px] font-semibold text-slate-600"
+            >
+              {name}: {value}
             </span>
-          )}
-
-          {variant.storage && (
-            <span className="rounded-lg border border-slate-200 bg-slate-50 px-2 py-0.5 text-[11px] font-semibold text-slate-600">
-              Storage: {variant.storage}
-            </span>
-          )}
-
-          {variant.color && (
-            <span className="rounded-lg border border-slate-200 bg-slate-50 px-2 py-0.5 text-[11px] font-semibold text-slate-600">
-              Color: {variant.color}
-            </span>
-          )}
+          ))}
         </div>
       </div>
 

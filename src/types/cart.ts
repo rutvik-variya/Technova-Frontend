@@ -16,6 +16,7 @@ export interface CartVariant {
     ram: string | null;
     storage: string | null;
     color: string | null;
+    attributes?: Record<string, string> | null;
     price: number | string;
     comparePrice: number | string | null;
     stock: number;
